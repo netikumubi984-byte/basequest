@@ -1,9 +1,9 @@
 import { ethers } from "ethers";
 
 export const ADDRESSES = {
-  core:   import.meta.env.VITE_CORE_CONTRACT   || "",
-  game:   import.meta.env.VITE_GAME_CONTRACT   || "",
-  bridge: import.meta.env.VITE_BRIDGE_CONTRACT || "",
+  core:     import.meta.env.VITE_CORE_CONTRACT     || "",
+  bossraid: import.meta.env.VITE_BOSSRAID_CONTRACT || "",
+  bridge:   import.meta.env.VITE_BRIDGE_CONTRACT   || "",
 };
 
 export const BASE_CHAIN_ID = 8453;
@@ -34,27 +34,24 @@ export const CORE_ABI = [
   "function getUserStreak(address user) external view returns (uint256)",
   "function profileTaskDone(address) external view returns (bool)",
   "function contractOwner() external view returns (address)",
+  "function isRegistered(address) external view returns (bool)",
   "event TaskCompleted(address indexed user, string taskType, uint256 xpEarned, uint256 timestamp)",
   "event StreakBonusAwarded(address indexed user, uint256 streak, uint256 xpEarned)",
 ];
 
-export const GAME_ABI = [
-  "function joinGame() external payable",
-  "function endRound() external",
-  "function getCurrentPlayers() external view returns (address[])",
-  "function getRoundTimeRemaining() external view returns (uint256)",
-  "function getRoundNumber() external view returns (uint256)",
-  "function hasJoinedCurrentRound(address player) external view returns (bool)",
-  "function getCurrentPrizePool() external view returns (uint256)",
-  "function getCurrentRoundStartTime() external view returns (uint256)",
-  "function isRoundEnded() external view returns (bool)",
-  "function getRecentRounds(uint256 count) external view returns (tuple(uint256 roundNumber, address winner, uint256 prize, uint256 playerCount, uint256 endedAt)[])",
-  "function getWinCount(address player) external view returns (uint256)",
-  "function ENTRY_FEE() external view returns (uint256)",
-  "function ROUND_DURATION() external view returns (uint256)",
-  "function currentRoundNumber() external view returns (uint256)",
-  "event PlayerJoined(address indexed player, uint256 roundNumber, uint256 prizePool)",
-  "event RoundEnded(address indexed winner, uint256 prize, uint256 roundNumber, uint256 playerCount)",
+export const BOSSRAID_ABI = [
+  "function attack() external payable",
+  "function getBossStatus() external view returns (uint256 raidNumber, uint256 maxHP, uint256 currentHP, uint256 hpPercent, bool defeated, address winner, uint256 prizePool, uint256 startedAt, uint256 attackCount, uint256 playerCount)",
+  "function getRecentAttacks(uint256 count) external view returns (address[] attackers, uint256[] damages, uint256[] hpAfters, bool[] killingBlows, uint256[] timestamps)",
+  "function getPlayerStats(address player) external view returns (uint256 damageThisRaid, uint256 totalDamage, uint256 raidsJoined, uint256 raidsWon, bool hasAttackedThisRaid)",
+  "function getRaidPlayers(uint256 raidNum) external view returns (address[])",
+  "function getRaidAttackCount(uint256 raidNum) external view returns (uint256)",
+  "function getTotalRaids() external view returns (uint256)",
+  "function ATTACK_FEE() external view returns (uint256)",
+  "function currentBoss() external view returns (uint256 raidNumber, uint256 maxHP, uint256 currentHP, bool defeated, address winner, uint256 prizePool, uint256 startedAt, uint256 endedAt, uint256 attackCount)",
+  "event BossSpawned(uint256 indexed raidNumber, uint256 maxHP, uint256 timestamp)",
+  "event AttackLanded(address indexed attacker, uint256 damage, uint256 hpRemaining, bool killingBlow, uint256 raidNumber)",
+  "event BossDefeated(address indexed winner, uint256 prize, uint256 raidNumber, uint256 totalAttackers)",
 ];
 
 export const BRIDGE_ABI = [
@@ -69,9 +66,9 @@ export function getReadProvider() {
   return _readProvider;
 }
 
-export function getCoreContract(s)   { if (!ADDRESSES.core)   throw new Error("VITE_CORE_CONTRACT not set");   return new ethers.Contract(ADDRESSES.core,   CORE_ABI,   s); }
-export function getGameContract(s)   { if (!ADDRESSES.game)   throw new Error("VITE_GAME_CONTRACT not set");   return new ethers.Contract(ADDRESSES.game,   GAME_ABI,   s); }
-export function getBridgeContract(s) { if (!ADDRESSES.bridge) throw new Error("VITE_BRIDGE_CONTRACT not set"); return new ethers.Contract(ADDRESSES.bridge, BRIDGE_ABI, s); }
+export function getCoreContract(s)     { if (!ADDRESSES.core)     throw new Error("VITE_CORE_CONTRACT not set");     return new ethers.Contract(ADDRESSES.core,     CORE_ABI,     s); }
+export function getBossRaidContract(s) { if (!ADDRESSES.bossraid) throw new Error("VITE_BOSSRAID_CONTRACT not set"); return new ethers.Contract(ADDRESSES.bossraid, BOSSRAID_ABI, s); }
+export function getBridgeContract(s)   { if (!ADDRESSES.bridge)   throw new Error("VITE_BRIDGE_CONTRACT not set");   return new ethers.Contract(ADDRESSES.bridge,   BRIDGE_ABI,   s); }
 
 export const LEVELS = [
   { level: 1, name: "Newbie",  minXP: 0,     maxXP: 499,      color: "#8892a4", emoji: "🌱" },
@@ -117,9 +114,9 @@ export async function getEthPrice() {
   const now = Date.now();
   if (_ethPrice && now - _ethPriceAt < 120000) return _ethPrice;
   try {
-    const res  = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd");
-    const data = await res.json();
-    _ethPrice  = data.ethereum?.usd || 2500;
+    const res   = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd");
+    const data  = await res.json();
+    _ethPrice   = data.ethereum?.usd || 2500;
     _ethPriceAt = now;
     return _ethPrice;
   } catch { return _ethPrice || 2500; }
@@ -157,10 +154,10 @@ export function getRefFromUrl() {
 
 // ── Platform links ─────────────────────────────────────────────────────────
 export const SWAP_PLATFORMS = [
-  { id: "swapAerodrome", name: "Swap on Aerodrome", icon: "✈️", url: "https://aerodrome.finance/swap",         xp: 50, color: "#ff6b6b" },
-  { id: "swapUniswap",   name: "Swap on Uniswap",   icon: "🦄", url: "https://app.uniswap.org/#/swap?chain=base", xp: 50, color: "#ff007a" },
-  { id: "swapJumper",    name: "Swap on Jumper",    icon: "🦗", url: "https://jumper.exchange/?fromChain=8453&toChain=8453", xp: 50, color: "#a855f7" },
-  { id: "swapRelay",     name: "Swap on Relay",     icon: "⚡", url: "https://relay.link/swap?fromChainId=8453&toChainId=8453", xp: 50, color: "#00d4ff" },
+  { id: "swapAerodrome", name: "Swap on Aerodrome", icon: "✈️", url: "https://aerodrome.finance/swap",                              xp: 50, color: "#ff6b6b" },
+  { id: "swapUniswap",   name: "Swap on Uniswap",   icon: "🦄", url: "https://app.uniswap.org/#/swap?chain=base",                   xp: 50, color: "#ff007a" },
+  { id: "swapJumper",    name: "Swap on Jumper",    icon: "🦗", url: "https://jumper.exchange/?fromChain=8453&toChain=8453",         xp: 50, color: "#a855f7" },
+  { id: "swapRelay",     name: "Swap on Relay",     icon: "⚡", url: "https://relay.link/swap?fromChainId=8453&toChainId=8453",     xp: 50, color: "#00d4ff" },
 ];
 
 export const BRIDGE_PLATFORMS = [
@@ -169,12 +166,12 @@ export const BRIDGE_PLATFORMS = [
 ];
 
 export const NFT_PLATFORMS = [
-  { id: "mintZora",      name: "Mint on Zora",       icon: "🟡", url: "https://zora.co/explore/base",          color: "#f0b429" },
-  { id: "mintOpensea",   name: "Mint on OpenSea",    icon: "🌊", url: "https://opensea.io/collection?chain=base", color: "#2081e2" },
-  { id: "mintMintfun",   name: "Mint on mint.fun",   icon: "🎯", url: "https://mint.fun/base",                  color: "#00c853" },
-  { id: "mintMagiceden", name: "Mint on Magic Eden", icon: "🪄", url: "https://magiceden.io/collections/base", color: "#e42575" },
-  { id: "mintBasepaint", name: "Mint on BasePaint",  icon: "🎨", url: "https://basepaint.xyz",                  color: "#0052ff" },
-  { id: "mintSuperrare", name: "Mint on SuperRare",  icon: "💎", url: "https://superrare.com",                  color: "#00d4ff" },
+  { id: "mintZora",      name: "Zora",       icon: "🟡", url: "https://zora.co/explore/base",             color: "#f0b429" },
+  { id: "mintOpensea",   name: "OpenSea",    icon: "🌊", url: "https://opensea.io/collection?chain=base", color: "#2081e2" },
+  { id: "mintMintfun",   name: "mint.fun",   icon: "🎯", url: "https://mint.fun/base",                    color: "#00c853" },
+  { id: "mintMagiceden", name: "Magic Eden", icon: "🪄", url: "https://magiceden.io/collections/base",    color: "#e42575" },
+  { id: "mintBasepaint", name: "BasePaint",  icon: "🎨", url: "https://basepaint.xyz",                    color: "#0052ff" },
+  { id: "mintSuperrare", name: "SuperRare",  icon: "💎", url: "https://superrare.com",                    color: "#00d4ff" },
 ];
 // ──────────────────────────────────────────────────────────────────────────
 
@@ -183,7 +180,7 @@ export const TASKS = [
   { id: "deploy",   name: "Deploy Contract", description: "Deploy a contract to Base Mainnet",    xp: 100, ethCost: "0.00005", icon: "🚀", daily: true,  field: "deployedContract", fieldLabel: "Deployed Contract Address", fieldPlaceholder: "0x..." },
   { id: "swap",     name: "Swap on Base",    description: "Swap on any Base DEX",                 xp: 75,  ethCost: "0.00005", icon: "🔄", daily: true,  field: null, hasSubs: true },
   { id: "bridge",   name: "Bridge to Base",  description: "Bridge assets to Base",                xp: 100, ethCost: "0.00005", icon: "🌉", daily: true,  field: null, hasSubs: true },
-  { id: "game",     name: "Play Mini-Game",  description: "Enter the 5-minute prize pool game",   xp: 75,  ethCost: "0.00005", icon: "🎲", daily: true,  field: null },
+  { id: "game",     name: "Boss Raid",       description: "Attack the boss & win the prize pool", xp: 75,  ethCost: "0.00005", icon: "🐉", daily: true,  field: null },
   { id: "mint",     name: "Mint NFT",        description: "Mint any NFT on Base Mainnet",         xp: 125, ethCost: "0.00005", icon: "🎨", daily: true,  field: "nftContract", fieldLabel: "NFT Contract Address", fieldPlaceholder: "0x...", hasSubs: true },
   { id: "referral", name: "Refer a Friend",  description: "Share your link & earn 150 XP",       xp: 150, ethCost: "0.00005", icon: "👥", daily: true,  field: "referred", fieldLabel: "Friend's Wallet Address or Share Link", fieldPlaceholder: "0x... or paste share link" },
   { id: "profile",  name: "Set Profile",     description: "Set your on-chain username",           xp: 50,  ethCost: "0.00005", icon: "🪪", daily: false, oneTime: true, field: "username", fieldLabel: "Username (max 32 chars)", fieldPlaceholder: "based_degen" },
