@@ -83,7 +83,7 @@ contract BaseQuestCore {
     }
 
     function completeGMTask() external payable registered {
-        require(msg.value == 0.0001 ether, "BaseQuestCore: incorrect payment for GM task");
+        require(msg.value == 0.00005 ether, "BaseQuestCore: incorrect payment for GM task");
         _resetDailyIfNeeded(msg.sender);
         require(!dailyTasks[msg.sender].gmDone, "BaseQuestCore: GM task already done today");
         dailyTasks[msg.sender].gmDone = true;
@@ -91,7 +91,7 @@ contract BaseQuestCore {
     }
 
     function completeDeployTask(address deployedContract) external payable registered {
-        require(msg.value == 0.0002 ether, "BaseQuestCore: incorrect payment for deploy task");
+        require(msg.value == 0.00005 ether, "BaseQuestCore: incorrect payment for deploy task");
         require(deployedContract != address(0), "BaseQuestCore: invalid contract address");
         _resetDailyIfNeeded(msg.sender);
         require(!dailyTasks[msg.sender].deployDone, "BaseQuestCore: deploy task already done today");
@@ -100,7 +100,7 @@ contract BaseQuestCore {
     }
 
     function completeSwapTask() external payable registered {
-        require(msg.value == 0.0001 ether, "BaseQuestCore: incorrect payment for swap task");
+        require(msg.value == 0.00005 ether, "BaseQuestCore: incorrect payment for swap task");
         _resetDailyIfNeeded(msg.sender);
         require(!dailyTasks[msg.sender].swapDone, "BaseQuestCore: swap task already done today");
         dailyTasks[msg.sender].swapDone = true;
@@ -108,7 +108,7 @@ contract BaseQuestCore {
     }
 
     function completeBridgeTask() external payable registered {
-        require(msg.value == 0.0002 ether, "BaseQuestCore: incorrect payment for bridge task");
+        require(msg.value == 0.00005 ether, "BaseQuestCore: incorrect payment for bridge task");
         _resetDailyIfNeeded(msg.sender);
         require(!dailyTasks[msg.sender].bridgeDone, "BaseQuestCore: bridge task already done today");
         dailyTasks[msg.sender].bridgeDone = true;
@@ -116,7 +116,7 @@ contract BaseQuestCore {
     }
 
     function completeGameTask() external payable registered {
-        require(msg.value == 0.0001 ether, "BaseQuestCore: incorrect payment for game task");
+        require(msg.value == 0.00005 ether, "BaseQuestCore: incorrect payment for game task");
         _resetDailyIfNeeded(msg.sender);
         require(!dailyTasks[msg.sender].gameDone, "BaseQuestCore: game task already done today");
         dailyTasks[msg.sender].gameDone = true;
@@ -124,7 +124,7 @@ contract BaseQuestCore {
     }
 
     function completeReferralTask(address referred) external payable registered {
-        require(msg.value == 0.0001 ether, "BaseQuestCore: incorrect payment for referral task");
+        require(msg.value == 0.00005 ether, "BaseQuestCore: incorrect payment for referral task");
         require(referred != address(0), "BaseQuestCore: invalid referred address");
         require(referred != msg.sender, "BaseQuestCore: cannot refer yourself");
         require(!hasBeenReferred[referred], "BaseQuestCore: address already referred");
@@ -141,7 +141,7 @@ contract BaseQuestCore {
     }
 
     function completeProfileTask(string calldata username) external payable registered {
-        require(msg.value == 0.0001 ether, "BaseQuestCore: incorrect payment for profile task");
+        require(msg.value == 0.00005 ether, "BaseQuestCore: incorrect payment for profile task");
         require(!profileTaskDone[msg.sender], "BaseQuestCore: profile already set");
         require(bytes(username).length > 0, "BaseQuestCore: username cannot be empty");
         require(bytes(username).length <= 32, "BaseQuestCore: username too long");
@@ -153,7 +153,7 @@ contract BaseQuestCore {
     }
 
     function completeMintNFTTask(address nftContract) external payable registered {
-        require(msg.value == 0.0001 ether, "BaseQuestCore: incorrect payment for mint task");
+        require(msg.value == 0.00005 ether, "BaseQuestCore: incorrect payment for mint task");
         require(nftContract != address(0), "BaseQuestCore: invalid NFT contract address");
         _resetDailyIfNeeded(msg.sender);
         require(!dailyTasks[msg.sender].mintDone, "BaseQuestCore: mint task already done today");
