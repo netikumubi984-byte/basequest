@@ -21,6 +21,7 @@ contract BaseQuestCore {
     struct DailyTask {
         bool gmDone; bool deployDone; bool swapDone;
         bool bridgeDone; bool gameDone; bool referralDone;
+        bool mintDone;
         uint256 day;
     }
 
@@ -151,6 +152,15 @@ contract BaseQuestCore {
         emit UsernameSet(msg.sender, username);
     }
 
+    function completeMintNFTTask(address nftContract) external payable registered {
+        require(msg.value == 0.0001 ether, "BaseQuestCore: incorrect payment for mint task");
+        require(nftContract != address(0), "BaseQuestCore: invalid NFT contract address");
+        _resetDailyIfNeeded(msg.sender);
+        require(!dailyTasks[msg.sender].mintDone, "BaseQuestCore: mint task already done today");
+        dailyTasks[msg.sender].mintDone = true;
+        _awardXPAndDistribute(msg.sender, 125, "MINT_NFT");
+    }
+
     function getUserXP(address user) external view returns (uint256) { return profiles[user].totalXP; }
 
     function getUserLevel(address user) external view returns (uint256) {
@@ -171,13 +181,14 @@ contract BaseQuestCore {
 
     function getDailyTasks(address user) external view returns (
         bool gmDone, bool deployDone, bool swapDone,
-        bool bridgeDone, bool gameDone, bool referralDone, bool profileDone
+        bool bridgeDone, bool gameDone, bool referralDone,
+        bool profileDone, bool mintDone
     ) {
         DailyTask storage d = dailyTasks[user];
         bool today = (d.day == _today());
         return (today && d.gmDone, today && d.deployDone, today && d.swapDone,
                 today && d.bridgeDone, today && d.gameDone, today && d.referralDone,
-                profileTaskDone[user]);
+                profileTaskDone[user], today && d.mintDone);
     }
 
     function getTopUsers(uint256 count) external view returns (address[] memory topAddresses, uint256[] memory topXPs) {
