@@ -69,14 +69,17 @@ function buildHeatmap(txs, days) {
 
 function computeBaseScore({ totalTxs, walletAgeDays, uniqueContracts, totalSentEth, totalRecvEth, failedCount, streakDays }) {
   let score = 0;
-  score += Math.min(300, totalTxs * 2);
-  score += Math.min(200, walletAgeDays * 2);
-  score += Math.min(200, uniqueContracts * 5);
+  score += Math.min(350, totalTxs * 0.8);        // raised cap, lower rate (avoids dominating)
+  score += Math.min(200, walletAgeDays * 1.5);    // age still matters
+  score += Math.min(250, uniqueContracts * 1.2);  // raised cap significantly
   score += Math.min(150, (totalSentEth + totalRecvEth) * 10);
-  score += Math.min(100, streakDays * 10);
-  score -= failedCount * 2;
-  return Math.max(0, Math.min(100, Math.round(score / 10)));
+  score += Math.min(200, streakDays * 15);        // streak now worth much more
+  score -= Math.min(80, failedCount * 0.5);       // penalty capped & reduced
+  return Math.max(0, Math.min(100, Math.round(score / 11)));
 }
+  
+  
+
 
 function emptyAnalytics(address) {
   return { address, walletAgeDays: 0, totalTxs: 0, successTxs: 0, failedCount: 0, firstTx: null, lastTx: null, totalSentEth: "0.000000", totalRecvEth: "0.000000", avgGasUsed: 0, uniqueContracts: 0, topContracts: [], heatmap: { cells: new Array(90).fill(0), maxCount: 1, longestStreak: 0, days: 90 }, baseScore: 0 };
