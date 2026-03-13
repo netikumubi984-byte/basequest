@@ -8,16 +8,16 @@ contract BaseQuestCore {
 
     uint256 constant BIT_GM           = 1 << 0;
     uint256 constant BIT_DEPLOY       = 1 << 1;
-    uint256 constant BIT_DEPLOY_REMIX = 1 << 12;
-    uint256 constant BIT_SWAP        = 1 << 2;
-    uint256 constant BIT_BRIDGE      = 1 << 3;
-    uint256 constant BIT_GAME        = 1 << 4;
-    uint256 constant BIT_SWAP_AERO   = 1 << 5;
-    uint256 constant BIT_SWAP_UNI    = 1 << 6;
-    uint256 constant BIT_SWAP_JUMP   = 1 << 7;
-    uint256 constant BIT_SWAP_RELAY  = 1 << 8;
-    uint256 constant BIT_BRIDGE_JUMP = 1 << 9;
-    uint256 constant BIT_BRIDGE_RELAY= 1 << 10;
+    uint256 constant BIT_SWAP         = 1 << 2;
+    uint256 constant BIT_BRIDGE       = 1 << 3;
+    uint256 constant BIT_GAME         = 1 << 4;
+    uint256 constant BIT_SWAP_AERO    = 1 << 5;
+    uint256 constant BIT_SWAP_UNI     = 1 << 6;
+    uint256 constant BIT_SWAP_JUMP    = 1 << 7;
+    uint256 constant BIT_SWAP_RELAY   = 1 << 8;
+    uint256 constant BIT_BRIDGE_JUMP  = 1 << 9;
+    uint256 constant BIT_BRIDGE_RELAY = 1 << 10;
+    uint256 constant BIT_DEPLOY_REMIX = 1 << 11;
 
     struct UserProfile {
         uint256 totalXP;
@@ -195,20 +195,22 @@ contract BaseQuestCore {
         _awardXPAndDistribute(msg.sender, 50, "BRIDGE_JUMPER");
     }
 
-    function completeDeployRemix() external payable registered {
-        require(msg.value == 0.00005 ether, "BaseQuestCore: incorrect payment");
-        _resetDailyIfNeeded(msg.sender);
-        require(!_isDone(msg.sender, BIT_DEPLOY_REMIX), "BaseQuestCore: already done today");
-        _setDone(msg.sender, BIT_DEPLOY_REMIX);
-        _awardXPAndDistribute(msg.sender, 50, "DEPLOY_REMIX");
-    }
-
     function completeBridgeRelay() external payable registered {
         require(msg.value == 0.00005 ether, "BaseQuestCore: incorrect payment");
         _resetDailyIfNeeded(msg.sender);
         require(!_isDone(msg.sender, BIT_BRIDGE_RELAY), "BaseQuestCore: already done today");
         _setDone(msg.sender, BIT_BRIDGE_RELAY);
         _awardXPAndDistribute(msg.sender, 50, "BRIDGE_RELAY");
+    }
+
+    // ── Deploy sub-tasks ──────────────────────────────────────────────────
+
+    function completeDeployRemix() external payable registered {
+        require(msg.value == 0.00005 ether, "BaseQuestCore: incorrect payment");
+        _resetDailyIfNeeded(msg.sender);
+        require(!_isDone(msg.sender, BIT_DEPLOY_REMIX), "BaseQuestCore: already done today");
+        _setDone(msg.sender, BIT_DEPLOY_REMIX);
+        _awardXPAndDistribute(msg.sender, 50, "DEPLOY_REMIX");
     }
 
     // ── View functions ─────────────────────────────────────────────────────
@@ -249,7 +251,8 @@ contract BaseQuestCore {
     function getSubTasks(address user) external view returns (
         bool swapAerodromeDone, bool swapUniswapDone,
         bool swapJumperDone,    bool swapRelayDone,
-        bool bridgeJumperDone,  bool bridgeRelayDone
+        bool bridgeJumperDone,  bool bridgeRelayDone,
+        bool deployRemixDone
     ) {
         uint256 bits  = dailyTasks[user].bits;
         bool    today = (dailyTasks[user].day == _today());
@@ -259,7 +262,8 @@ contract BaseQuestCore {
             today && (bits & BIT_SWAP_JUMP)    != 0,
             today && (bits & BIT_SWAP_RELAY)   != 0,
             today && (bits & BIT_BRIDGE_JUMP)  != 0,
-            today && (bits & BIT_BRIDGE_RELAY) != 0
+            today && (bits & BIT_BRIDGE_RELAY) != 0,
+            today && (bits & BIT_DEPLOY_REMIX) != 0
         );
     }
 
