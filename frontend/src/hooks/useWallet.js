@@ -82,5 +82,6 @@ export function useWallet() {
     }
   }, []);
 
-  return { address, provider, signer, chainId, isConnecting, isCorrectNetwork, error, connect, disconnect, switchToBase };
+  const isConnected = !!address && !!signer;
+return { address, provider, signer, chainId, isConnecting, isConnected, isCorrectNetwork, error, connect, disconnect, switchNetwork: switchToBase };
 }
