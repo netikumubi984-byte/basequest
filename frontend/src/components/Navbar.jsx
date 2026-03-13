@@ -1,110 +1,270 @@
-import React, { useState } from "react";
-import { shortAddr } from "../utils/contracts.js";
+import { useState } from "react";
+import { shortAddr, getLevelInfo } from "../utils/contracts";
 
-const WALLETS = [
-  { id: "metamask", label: "MetaMask",       icon: "🦊" },
-  { id: "coinbase", label: "Coinbase Wallet", icon: "🔵" },
-  { id: "injected", label: "Rabby / Other",   icon: "🔑" },
-];
+export default function Navbar({ wallet }) {
+  const { address, isConnected, isConnecting, isCorrectNetwork,
+          connect, disconnect, switchNetwork, userProfile } = wallet;
 
-const TABS = [
-  { id: "dashboard",   label: "Dashboard" },
-  { id: "quests",      label: "Quests" },
-  { id: "game",        label: "Mini-Game", dot: true },
-  { id: "leaderboard", label: "Leaderboard" },
-  { id: "analyzer",    label: "Wallet Analyzer" },
-];
-
-export default function Navbar({ address, isConnecting, isCorrectNetwork, profile, levelInfo, onConnect, onDisconnect, onSwitchNetwork, activeTab, setActiveTab }) {
   const [showWalletMenu, setShowWalletMenu] = useState(false);
   const [showUserMenu,   setShowUserMenu]   = useState(false);
 
+  const levelInfo = userProfile ? getLevelInfo(userProfile.totalXP) : null;
+
+  const WALLETS = [
+    { id: "metamask", label: "MetaMask",        icon: "🦊" },
+    { id: "coinbase", label: "Coinbase Wallet",  icon: "🔵" },
+    { id: "injected", label: "Rabby / Other",    icon: "🔑" },
+  ];
+
   return (
-    <nav className="sticky top-0 z-50 border-b border-white/5" style={{ background: "rgba(10,11,15,0.92)", backdropFilter: "blur(20px)" }}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab("dashboard")}>
-            <div className="w-8 h-8 rounded-lg bg-[#0052ff]/20 border border-[#0052ff]/30 flex items-center justify-center overflow-hidden">
-              <img src="/logo.png" alt="BaseQuest" className="w-full h-full object-cover" onError={e => { e.target.style.display="none"; e.target.parentNode.innerHTML='<span style="color:#00d4ff;font-weight:bold;font-size:11px;font-family:Syne,sans-serif">BQ</span>'; }} />
-            </div>
-            <span className="font-display font-bold text-white text-lg tracking-tight hidden sm:block">Base<span className="text-[#00d4ff]">Quest</span></span>
-          </div>
+    <nav style={{
+      position:       "sticky",
+      top:            0,
+      zIndex:         100,
+      borderBottom:   "1px solid rgba(255,255,255,0.06)",
+      background:     "rgba(10,11,15,0.95)",
+      backdropFilter: "blur(20px)",
+      height:         "64px",
+      display:        "flex",
+      alignItems:     "center",
+    }}>
+      <div style={{
+        maxWidth:       "1100px",
+        margin:         "0 auto",
+        padding:        "0 16px",
+        width:          "100%",
+        display:        "flex",
+        alignItems:     "center",
+        justifyContent: "space-between",
+        gap:            "16px",
+      }}>
 
-          <div className="hidden md:flex items-center gap-1">
-            {TABS.map(tab => (
-              <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                className={"px-4 py-2 rounded-lg text-sm font-mono transition-all duration-200 relative " + (activeTab === tab.id ? "text-white tab-active" : "text-[#8892a4] hover:text-white hover:bg-white/5")}>
-                {tab.label}
-                {tab.dot && <span className="ml-1.5 inline-block w-1.5 h-1.5 rounded-full bg-[#00c853] animate-pulse" />}
-              </button>
-            ))}
+        {/* Logo */}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div style={{
+            width:          "34px",
+            height:         "34px",
+            borderRadius:   "10px",
+            background:     "rgba(0,82,255,0.15)",
+            border:         "1px solid rgba(0,82,255,0.3)",
+            display:        "flex",
+            alignItems:     "center",
+            justifyContent: "center",
+            fontSize:       "18px",
+            overflow:       "hidden",
+          }}>
+            <img src="/logo.svg" alt="BQ" style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              onError={e => { e.target.style.display = "none"; e.target.parentNode.innerHTML = '<span style="color:#00d4ff;font-weight:900;font-size:12px">BQ</span>'; }} />
           </div>
+          <span style={{ color: "white", fontWeight: "900", fontSize: "18px", letterSpacing: "-0.5px" }}>
+            Base<span style={{ color: "#00d4ff" }}>Quest</span>
+          </span>
+        </div>
 
-          <div className="flex items-center gap-3">
-            {address && profile && levelInfo && (
-              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#12141a] border border-white/10">
-                <span className="text-lg">{levelInfo.current.emoji}</span>
-                <div className="flex flex-col leading-none">
-                  <span className="font-[Orbitron] text-[#00d4ff] text-xs font-bold">{profile.totalXP.toLocaleString()} XP</span>
-                  <span className="font-mono text-[#8892a4] text-[10px]">Lvl {levelInfo.current.level} · {levelInfo.current.name}</span>
+        {/* Right side */}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+
+          {/* XP badge — shown when connected */}
+          {isConnected && levelInfo && (
+            <div style={{
+              display:      "flex",
+              alignItems:   "center",
+              gap:          "8px",
+              padding:      "6px 12px",
+              background:   "rgba(255,255,255,0.04)",
+              border:       "1px solid rgba(255,255,255,0.08)",
+              borderRadius: "10px",
+            }}>
+              <span style={{ fontSize: "18px" }}>{levelInfo.current.emoji}</span>
+              <div style={{ lineHeight: 1.2 }}>
+                <div style={{ color: "#00d4ff", fontWeight: "800", fontSize: "12px" }}>
+                  {userProfile.totalXP.toLocaleString()} XP
+                </div>
+                <div style={{ color: "#8892a4", fontSize: "10px" }}>
+                  Lvl {levelInfo.current.level} · {levelInfo.current.name}
                 </div>
               </div>
-            )}
-            {address && !isCorrectNetwork && (
-              <button onClick={onSwitchNetwork} className="badge badge-red animate-pulse cursor-pointer">⚠ Wrong Network</button>
-            )}
-            {!address ? (
-              <div className="relative">
-                <button onClick={() => setShowWalletMenu(v => !v)} disabled={isConnecting} className="btn-primary text-sm">
-                  {isConnecting ? <><span className="spinner spinner-sm" /> Connecting...</> : "Connect Wallet"}
-                </button>
-                {showWalletMenu && (
-                  <div className="absolute right-0 top-full mt-2 w-52 glass-card border border-white/10 rounded-xl p-2 animate-in">
-                    {WALLETS.map(w => (
-                      <button key={w.id} onClick={() => { onConnect(w.id); setShowWalletMenu(false); }}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors text-left">
-                        <span className="text-xl">{w.icon}</span>
-                        <span className="font-mono text-sm text-white">{w.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="relative">
-                <button onClick={() => setShowUserMenu(v => !v)} className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#12141a] border border-[#0052ff]/30 hover:border-[#0052ff]/60 transition-all">
-                  <div className="w-2 h-2 rounded-full bg-[#00c853] animate-pulse" />
-                  <span className="font-mono text-sm text-white">{shortAddr(address)}</span>
-                </button>
-                {showUserMenu && (
-                  <div className="absolute right-0 top-full mt-2 w-48 glass-card border border-white/10 rounded-xl p-2 animate-in">
-                    <div className="px-3 py-2 border-b border-white/10 mb-1">
-                      <p className="font-mono text-xs text-[#8892a4]">Connected</p>
-                      <p className="font-mono text-sm text-white truncate">{shortAddr(address)}</p>
-                    </div>
-                    <a href={"https://basescan.org/address/" + address} target="_blank" rel="noopener noreferrer" onClick={() => setShowUserMenu(false)}
-                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors text-left">
-                      <span>🔍</span><span className="font-mono text-sm text-[#8892a4]">View on Basescan</span>
-                    </a>
-                    <button onClick={() => { onDisconnect(); setShowUserMenu(false); }} className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[#ff3b3b]/10 transition-colors text-left">
-                      <span>🚪</span><span className="font-mono text-sm text-[#ff3b3b]">Disconnect</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="md:hidden flex gap-1 pb-2 overflow-x-auto">
-          {TABS.map(tab => (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-              className={"flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-mono transition-all " + (activeTab === tab.id ? "bg-[#0052ff]/20 text-[#00d4ff] border border-[#0052ff]/30" : "text-[#8892a4] hover:text-white")}>
-              {tab.label}
+            </div>
+          )}
+
+          {/* Wrong network warning */}
+          {isConnected && !isCorrectNetwork && (
+            <button
+              onClick={switchNetwork}
+              style={{
+                background:   "rgba(255,59,59,0.15)",
+                border:       "1px solid rgba(255,59,59,0.4)",
+                borderRadius: "8px",
+                padding:      "6px 12px",
+                color:        "#ff6b6b",
+                fontWeight:   "700",
+                fontSize:     "12px",
+                cursor:       "pointer",
+              }}
+            >
+              ⚠ Wrong Network
             </button>
-          ))}
+          )}
+
+          {/* Connect / Wallet menu */}
+          {!isConnected ? (
+            <div style={{ position: "relative" }}>
+              <button
+                onClick={() => setShowWalletMenu(v => !v)}
+                disabled={isConnecting}
+                style={{
+                  background:   isConnecting ? "rgba(0,82,255,0.4)" : "linear-gradient(135deg, #0052ff, #0041cc)",
+                  border:       "none",
+                  borderRadius: "10px",
+                  padding:      "9px 18px",
+                  color:        "white",
+                  fontWeight:   "700",
+                  fontSize:     "13px",
+                  cursor:       isConnecting ? "not-allowed" : "pointer",
+                  boxShadow:    "0 4px 16px rgba(0,82,255,0.3)",
+                }}
+              >
+                {isConnecting ? "Connecting..." : "Connect Wallet"}
+              </button>
+
+              {showWalletMenu && (
+                <div style={{
+                  position:     "absolute",
+                  right:        0,
+                  top:          "calc(100% + 8px)",
+                  width:        "200px",
+                  background:   "#12141a",
+                  border:       "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: "14px",
+                  padding:      "8px",
+                  zIndex:       200,
+                  boxShadow:    "0 8px 32px rgba(0,0,0,0.4)",
+                }}>
+                  {WALLETS.map(w => (
+                    <button
+                      key={w.id}
+                      onClick={() => { connect(w.id); setShowWalletMenu(false); }}
+                      style={{
+                        width:        "100%",
+                        display:      "flex",
+                        alignItems:   "center",
+                        gap:          "10px",
+                        padding:      "10px 12px",
+                        background:   "none",
+                        border:       "none",
+                        borderRadius: "8px",
+                        color:        "white",
+                        fontSize:     "13px",
+                        fontWeight:   "600",
+                        cursor:       "pointer",
+                        textAlign:    "left",
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
+                      onMouseLeave={e => e.currentTarget.style.background = "none"}
+                    >
+                      <span style={{ fontSize: "20px" }}>{w.icon}</span>
+                      {w.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+          ) : (
+            <div style={{ position: "relative" }}>
+              <button
+                onClick={() => setShowUserMenu(v => !v)}
+                style={{
+                  display:      "flex",
+                  alignItems:   "center",
+                  gap:          "8px",
+                  padding:      "8px 14px",
+                  background:   "rgba(255,255,255,0.04)",
+                  border:       "1px solid rgba(0,82,255,0.3)",
+                  borderRadius: "10px",
+                  color:        "white",
+                  fontWeight:   "600",
+                  fontSize:     "13px",
+                  cursor:       "pointer",
+                }}
+              >
+                <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#00c853" }} />
+                {userProfile?.usernameSet ? userProfile.username : shortAddr(address)}
+              </button>
+
+              {showUserMenu && (
+                <div style={{
+                  position:     "absolute",
+                  right:        0,
+                  top:          "calc(100% + 8px)",
+                  width:        "200px",
+                  background:   "#12141a",
+                  border:       "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: "14px",
+                  padding:      "8px",
+                  zIndex:       200,
+                  boxShadow:    "0 8px 32px rgba(0,0,0,0.4)",
+                }}>
+                  <div style={{ padding: "8px 12px 10px", borderBottom: "1px solid rgba(255,255,255,0.08)", marginBottom: "6px" }}>
+                    <div style={{ color: "#8892a4", fontSize: "11px", marginBottom: "2px" }}>Connected</div>
+                    <div style={{ color: "white", fontSize: "13px", fontWeight: "600" }}>{shortAddr(address)}</div>
+                  </div>
+                  <a
+                    href={`https://basescan.org/address/${address}`}
+                    target="_blank" rel="noreferrer"
+                    onClick={() => setShowUserMenu(false)}
+                    style={{
+                      display:      "flex",
+                      alignItems:   "center",
+                      gap:          "8px",
+                      padding:      "9px 12px",
+                      borderRadius: "8px",
+                      color:        "#8892a4",
+                      fontSize:     "13px",
+                      textDecoration: "none",
+                      cursor:       "pointer",
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
+                    onMouseLeave={e => e.currentTarget.style.background = "none"}
+                  >
+                    🔍 View on Basescan
+                  </a>
+                  <button
+                    onClick={() => { disconnect(); setShowUserMenu(false); }}
+                    style={{
+                      width:        "100%",
+                      display:      "flex",
+                      alignItems:   "center",
+                      gap:          "8px",
+                      padding:      "9px 12px",
+                      background:   "none",
+                      border:       "none",
+                      borderRadius: "8px",
+                      color:        "#ff6b6b",
+                      fontSize:     "13px",
+                      fontWeight:   "600",
+                      cursor:       "pointer",
+                      textAlign:    "left",
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = "rgba(255,59,59,0.08)"}
+                    onMouseLeave={e => e.currentTarget.style.background = "none"}
+                  >
+                    🚪 Disconnect
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
-      {(showWalletMenu || showUserMenu) && <div className="fixed inset-0 z-[-1]" onClick={() => { setShowWalletMenu(false); setShowUserMenu(false); }} />}
+
+      {/* Close menus on outside click */}
+      {(showWalletMenu || showUserMenu) && (
+        <div
+          style={{ position: "fixed", inset: 0, zIndex: 99 }}
+          onClick={() => { setShowWalletMenu(false); setShowUserMenu(false); }}
+        />
+      )}
     </nav>
   );
-}
+                  }
