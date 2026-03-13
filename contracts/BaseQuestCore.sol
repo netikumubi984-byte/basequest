@@ -195,6 +195,14 @@ contract BaseQuestCore {
         _awardXPAndDistribute(msg.sender, 50, "BRIDGE_JUMPER");
     }
 
+    function completeDeployRemix() external payable registered {
+        require(msg.value == 0.00005 ether, "BaseQuestCore: incorrect payment");
+        _resetDailyIfNeeded(msg.sender);
+        require(!_isDone(msg.sender, BIT_DEPLOY_REMIX), "BaseQuestCore: already done today");
+        _setDone(msg.sender, BIT_DEPLOY_REMIX);
+        _awardXPAndDistribute(msg.sender, 50, "DEPLOY_REMIX");
+    }
+
     function completeBridgeRelay() external payable registered {
         require(msg.value == 0.00005 ether, "BaseQuestCore: incorrect payment");
         _resetDailyIfNeeded(msg.sender);
