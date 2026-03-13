@@ -10,12 +10,23 @@ async function blockscoutFetch(address) {
 }
 
 async function blockscoutFetchLatest(address) {
-  const url = `${BLOCKSCOUT_URL}?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&page=1&offset=1`;
-  const res = await fetch(url);
-  if (!res.ok) return null;
-  const data = await res.json();
-  if (!Array.isArray(data.result) || data.result.length === 0) return null;
-  return data.result[0];
+  try {
+    const url = `https://base.blockscout.com/api/v2/addresses/${address}/transactions?filter=to%20%7C%20from`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const items = data?.items;
+    if (!Array.isArray(items) || items.length === 0) return null;
+    const tx = items[0];
+    return {
+      hash:      tx.hash,
+      timeStamp: String(Math.floor(new Date(tx.timestamp).getTime() / 1000)),
+      value:     tx.value || "0",
+    };
+  } catch (err) {
+    console.warn("blockscoutFetchLatest v2 failed:", err.message);
+    return null;
+  }
 }
   
 
