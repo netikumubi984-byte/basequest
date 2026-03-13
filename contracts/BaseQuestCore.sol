@@ -6,8 +6,9 @@ contract BaseQuestCore {
     uint256 public rewardPool;
     uint256[6] public levelThresholds = [0, 500, 1500, 3500, 7500, 15000];
 
-    uint256 constant BIT_GM          = 1 << 0;
-    uint256 constant BIT_DEPLOY      = 1 << 1;
+    uint256 constant BIT_GM           = 1 << 0;
+    uint256 constant BIT_DEPLOY       = 1 << 1;
+    uint256 constant BIT_DEPLOY_REMIX = 1 << 12;
     uint256 constant BIT_SWAP        = 1 << 2;
     uint256 constant BIT_BRIDGE      = 1 << 3;
     uint256 constant BIT_GAME        = 1 << 4;
