@@ -9,9 +9,10 @@ export default function QuestBoard({ quests, wallet }) {
     completedCount, totalDaily,
   } = quests;
 
-  const [fieldValues,  setFieldValues]  = useState({});
-  const [expandedTask, setExpandedTask] = useState(null);
-  const [expandedSubs, setExpandedSubs] = useState({});
+  const [fieldValues,   setFieldValues]   = useState({});
+  const [expandedTask,  setExpandedTask]  = useState(null);
+  const [expandedSubs,  setExpandedSubs]  = useState({});
+  const [showGuide,     setShowGuide]     = useState(false);
 
   const handleField = (taskId, field, value) => {
     setFieldValues(prev => ({ ...prev, [taskId]: { ...prev[taskId], [field]: value } }));
@@ -24,6 +25,19 @@ export default function QuestBoard({ quests, wallet }) {
   const toggleSubs = (taskId) => {
     setExpandedSubs(prev => ({ ...prev, [taskId]: !prev[taskId] }));
   };
+
+  const REMIX_GUIDE = [
+    { step: "1", title: "Open Remix IDE", desc: "Go to remix.ethereum.org in your browser." },
+    { step: "2", title: "Create a new file", desc: 'Click the 📄 icon in the File Explorer on the left. Name it anything, e.g. "MyContract.sol".' },
+    { step: "3", title: "Paste a simple contract", desc: 'Copy and paste this into the file:\n\n// SPDX-License-Identifier: MIT\npragma solidity ^0.8.20;\ncontract MyContract {\n    string public message = "GM Base!";\n}' },
+    { step: "4", title: "Compile the contract", desc: 'Click the "Solidity Compiler" tab (2nd icon on left). Click "Compile MyContract.sol". You should see a green checkmark.' },
+    { step: "5", title: "Switch to Deploy tab", desc: 'Click the "Deploy & Run Transactions" tab (3rd icon on left).' },
+    { step: "6", title: "Select Injected Provider", desc: 'In the ENVIRONMENT dropdown, select "Injected Provider - MetaMask". Your wallet will pop up — approve the connection.' },
+    { step: "7", title: "Switch to Base Mainnet", desc: "Make sure your wallet is on Base Mainnet (Chain ID: 8453). If not, switch networks in MetaMask or Coinbase Wallet." },
+    { step: "8", title: "Deploy the contract", desc: 'Click the orange "Deploy" button. Your wallet will ask you to confirm the transaction. Approve it.' },
+    { step: "9", title: "Copy your contract address", desc: 'After deployment, look at the bottom left under "Deployed Contracts". You will see your contract address. Click the 📋 copy icon next to it.' },
+    { step: "10", title: "Paste into BaseQuest", desc: 'Come back here, paste the address into the "Deployed Contract Address" field above, then click Complete!' },
+  ];
 
   const renderSubTasks = (platforms, groupId) => {
     const isOpen = expandedSubs[groupId];
@@ -40,39 +54,122 @@ export default function QuestBoard({ quests, wallet }) {
             {platforms.map(p => {
               const subDone = getSubTaskStatus(p.id).done;
               return (
-                <div key={p.id} style={{
-                  display:      "flex",
-                  alignItems:   "center",
-                  gap:          "10px",
-                  background:   subDone ? "rgba(0,200,83,0.08)" : "rgba(255,255,255,0.03)",
-                  border:       `1px solid ${subDone ? "rgba(0,200,83,0.2)" : "rgba(255,255,255,0.06)"}`,
-                  borderRadius: "10px",
-                  padding:      "10px 14px",
-                }}>
-                  <span style={{ fontSize: "20px" }}>{p.icon}</span>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ color: "white", fontSize: "13px", fontWeight: "600" }}>{p.name}</div>
+                <div key={p.id}>
+                  <div style={{
+                    display:      "flex",
+                    alignItems:   "center",
+                    gap:          "10px",
+                    background:   subDone ? "rgba(0,200,83,0.08)" : "rgba(255,255,255,0.03)",
+                    border:       `1px solid ${subDone ? "rgba(0,200,83,0.2)" : "rgba(255,255,255,0.06)"}`,
+                    borderRadius: "10px",
+                    padding:      "10px 14px",
+                  }}>
+                    <span style={{ fontSize: "20px" }}>{p.icon}</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ color: "white", fontSize: "13px", fontWeight: "600" }}>{p.name}</div>
+                    </div>
+                    <a href={p.url} target="_blank" rel="noreferrer"
+                      style={{ color: p.color, fontSize: "12px", fontWeight: "600", textDecoration: "none" }}>
+                      Go ↗
+                    </a>
+                    <button
+                      onClick={() => completeTask(p.id)}
+                      disabled={subDone || txPending}
+                      style={{
+                        background:   subDone ? "rgba(0,200,83,0.2)" : `${p.color}22`,
+                        border:       `1px solid ${subDone ? "rgba(0,200,83,0.4)" : p.color + "44"}`,
+                        borderRadius: "8px",
+                        padding:      "5px 12px",
+                        color:        subDone ? "#00c853" : p.color,
+                        fontSize:     "12px",
+                        fontWeight:   "700",
+                        cursor:       subDone || txPending ? "not-allowed" : "pointer",
+                      }}
+                    >
+                      {subDone ? "✓ Done" : "+50 XP"}
+                    </button>
                   </div>
-                  <a href={p.url} target="_blank" rel="noreferrer"
-                    style={{ color: p.color, fontSize: "12px", fontWeight: "600", textDecoration: "none" }}>
-                    Go ↗
-                  </a>
-                  <button
-                    onClick={() => completeTask(p.id)}
-                    disabled={subDone || txPending}
-                    style={{
-                      background:   subDone ? "rgba(0,200,83,0.2)" : `${p.color}22`,
-                      border:       `1px solid ${subDone ? "rgba(0,200,83,0.4)" : p.color + "44"}`,
-                      borderRadius: "8px",
-                      padding:      "5px 12px",
-                      color:        subDone ? "#00c853" : p.color,
-                      fontSize:     "12px",
-                      fontWeight:   "700",
-                      cursor:       subDone || txPending ? "not-allowed" : "pointer",
-                    }}
-                  >
-                    {subDone ? "✓ Done" : "+50 XP"}
-                  </button>
+
+                  {/* Remix Guide — only for deployRemix */}
+                  {p.id === "deployRemix" && (
+                    <div style={{ marginTop: "8px" }}>
+                      <div
+                        onClick={() => setShowGuide(!showGuide)}
+                        style={{
+                          color:        "#f0b429",
+                          fontSize:     "12px",
+                          fontWeight:   "600",
+                          cursor:       "pointer",
+                          padding:      "8px 14px",
+                          background:   "rgba(240,180,41,0.06)",
+                          border:       "1px solid rgba(240,180,41,0.15)",
+                          borderRadius: "8px",
+                          display:      "flex",
+                          alignItems:   "center",
+                          gap:          "6px",
+                        }}
+                      >
+                        📖 {showGuide ? "▲ Hide" : "▼ Show"} step-by-step guide — How to deploy on Remix IDE
+                      </div>
+
+                      {showGuide && (
+                        <div style={{
+                          background:   "rgba(255,255,255,0.02)",
+                          border:       "1px solid rgba(255,255,255,0.06)",
+                          borderRadius: "10px",
+                          padding:      "16px",
+                          marginTop:    "8px",
+                          display:      "flex",
+                          flexDirection:"column",
+                          gap:          "14px",
+                        }}>
+                          <div style={{ color: "white", fontSize: "13px", fontWeight: "800", marginBottom: "4px" }}>
+                            🚀 How to deploy a contract on Base using Remix IDE
+                          </div>
+                          {REMIX_GUIDE.map(g => (
+                            <div key={g.step} style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
+                              <div style={{
+                                minWidth:       "26px",
+                                height:         "26px",
+                                background:     "rgba(0,82,255,0.2)",
+                                border:         "1px solid rgba(0,82,255,0.4)",
+                                borderRadius:   "50%",
+                                display:        "flex",
+                                alignItems:     "center",
+                                justifyContent: "center",
+                                color:          "#0052ff",
+                                fontSize:       "12px",
+                                fontWeight:     "800",
+                                flexShrink:     0,
+                              }}>
+                                {g.step}
+                              </div>
+                              <div>
+                                <div style={{ color: "white", fontSize: "13px", fontWeight: "700", marginBottom: "3px" }}>
+                                  {g.title}
+                                </div>
+                                <div style={{ color: "#8892a4", fontSize: "12px", lineHeight: "1.5", whiteSpace: "pre-wrap" }}>
+                                  {g.desc}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                          <div style={{
+                            background:   "rgba(0,200,83,0.08)",
+                            border:       "1px solid rgba(0,200,83,0.2)",
+                            borderRadius: "8px",
+                            padding:      "10px 14px",
+                            color:        "#00c853",
+                            fontSize:     "12px",
+                            fontWeight:   "600",
+                            marginTop:    "4px",
+                          }}>
+                            ✅ Once deployed, paste your contract address in the field above and click Complete to earn +100 XP!
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -183,10 +280,10 @@ export default function QuestBoard({ quests, wallet }) {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
                     <span style={{ color: "white", fontWeight: "700", fontSize: "15px" }}>{task.name}</span>
-                    {isDone    && <span style={{ background: "rgba(0,200,83,0.2)",   color: "#00c853", fontSize: "11px", fontWeight: "700", padding: "2px 8px", borderRadius: "20px" }}>DONE</span>}
-                    {isAuto    && <span style={{ background: "rgba(240,180,41,0.2)", color: "#f0b429", fontSize: "11px", fontWeight: "700", padding: "2px 8px", borderRadius: "20px" }}>AUTO</span>}
+                    {isDone      && <span style={{ background: "rgba(0,200,83,0.2)",   color: "#00c853", fontSize: "11px", fontWeight: "700", padding: "2px 8px", borderRadius: "20px" }}>DONE</span>}
+                    {isAuto      && <span style={{ background: "rgba(240,180,41,0.2)", color: "#f0b429", fontSize: "11px", fontWeight: "700", padding: "2px 8px", borderRadius: "20px" }}>AUTO</span>}
                     {task.oneTime && !isDone && <span style={{ background: "rgba(168,85,247,0.2)", color: "#a855f7", fontSize: "11px", fontWeight: "700", padding: "2px 8px", borderRadius: "20px" }}>ONE-TIME</span>}
-                    {task.hasSubs && !isDone && <span style={{ background: "rgba(0,82,255,0.2)", color: "#00d4ff", fontSize: "11px", fontWeight: "700", padding: "2px 8px", borderRadius: "20px" }}>+BONUS XP</span>}
+                    {task.hasSubs && !isDone && <span style={{ background: "rgba(0,82,255,0.2)",   color: "#00d4ff", fontSize: "11px", fontWeight: "700", padding: "2px 8px", borderRadius: "20px" }}>+BONUS XP</span>}
                   </div>
                   <div style={{ color: "#8892a4", fontSize: "13px", marginTop: "2px" }}>{task.description}</div>
                 </div>
@@ -273,4 +370,4 @@ export default function QuestBoard({ quests, wallet }) {
       </div>
     </div>
   );
-}
+                  }
