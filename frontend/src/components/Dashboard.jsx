@@ -30,7 +30,7 @@ export default function Dashboard({ quests, wallet, setActiveTab }) {
   );
 
   return (
-    <div style={{ padding: "24px 0", display: "flex", flexDirection: "column", gap: "18px" }}>
+    <div style={{ padding: "24px 20px", display: "flex", flexDirection: "column", gap: "18px" }}>
 
       {/* Header */}
       <div>
@@ -80,11 +80,16 @@ export default function Dashboard({ quests, wallet, setActiveTab }) {
         </div>
       )}
 
-      {/* Stats grid */}
+      {/* Stats big box */}
       <div style={{
+        background: "rgba(255,255,255,0.03)",
+        border: "1px solid rgba(255,255,255,0.06)",
+        borderRadius: "18px",
+        padding: "16px",
         display: "grid",
-        gridTemplateColumns: "repeat(4,1fr)",
-        gap: "10px"
+        gridTemplateColumns: "1fr 1fr",
+        gridTemplateRows: "1fr 1fr",
+        gap: "12px"
       }}>
         {[
           { label: "Tasks", value: userProfile?.tasksCompleted?.toLocaleString() || "0", icon: "/check.svg" },
@@ -95,15 +100,19 @@ export default function Dashboard({ quests, wallet, setActiveTab }) {
               : "-", icon: "/calendar.svg" }
         ].map(stat => (
           <div key={stat.label} style={{
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(255,255,255,0.06)",
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.08)",
             borderRadius: "14px",
-            padding: "14px",
-            textAlign: "center"
+            padding: "16px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "6px"
           }}>
-            <img src={stat.icon} style={{ width: "22px", height: "22px", marginBottom: "6px" }} />
+            <img src={stat.icon} style={{ width: "24px", height: "24px" }} />
             <div style={{ color: "white", fontWeight: "700", fontSize: "16px" }}>{stat.value}</div>
-            <div style={{ color: "#8892a4", fontSize: "11px" }}>{stat.label}</div>
+            <div style={{ color: "#8892a4", fontSize: "12px" }}>{stat.label}</div>
           </div>
         ))}
       </div>
