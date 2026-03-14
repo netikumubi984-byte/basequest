@@ -63,80 +63,62 @@ export default function App() {
         </div>
       </div>
 
-      {/* Mobile floating bottom nav with scroll-visible shadow */}
+      {/* Mobile floating bottom nav with visible shadow */}
       <div style={{
         position: "fixed",
-        bottom: "26px",
+        bottom: "26px", // pushed upward
         left: "50%",
         transform: "translateX(-50%)",
         width: "90%",
         maxWidth: "480px",
+        display: "flex",
+        justifyContent: "space-between",
+        background: "rgba(10,11,15,0.9)", // slightly more opaque for shadow visibility
+        borderRadius: "9999px",
+        padding: "4px 0",
+        backdropFilter: "blur(15px)",
         zIndex: 100,
-        pointerEvents: "none", // container for shadow
-      }}>
+        boxShadow: "0 12px 20px -6px rgba(0,0,0,0.7)", // soft visible shadow below
+      }} className="mobile-nav">
 
-        {/* Shadow layer */}
-        <div style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          borderRadius: "9999px",
-          boxShadow: "0 8px 12px -4px rgba(0,0,0,0.5)", // visible bottom shadow
-          pointerEvents: "none",
-        }} />
+        {/* Sliding highlight */}
+        <div
+          style={{
+            position: "absolute",
+            top: "2%",
+            left: `${highlightPosition}%`,
+            width: `${100 / TABS.length}%`,
+            height: "96%",
+            borderRadius: "9999px",
+            background: "rgba(0,82,255,0.3)",
+            backdropFilter: "blur(10px)",
+            transition: "left 0.3s",
+            zIndex: -1,
+          }}
+        />
 
-        {/* Actual nav */}
-        <div style={{
-          display: "flex",
-          justifyContent: "space-between",
-          background: "rgba(10,11,15,0.6)",
-          borderRadius: "9999px",
-          padding: "2px 0",
-          backdropFilter: "blur(15px)",
-          pointerEvents: "auto", // nav clickable
-        }} className="mobile-nav">
-
-          {/* Sliding highlight */}
+        {TABS.map((tab, index) => (
           <div
-            style={{
-              position: "absolute",
-              top: "2%",
-              left: `${highlightPosition}%`,
-              width: `${100 / TABS.length}%`,
-              height: "96%",
-              borderRadius: "9999px",
-              background: "rgba(0,82,255,0.3)",
-              backdropFilter: "blur(10px)",
-              transition: "left 0.3s",
-              zIndex: -1,
+            key={tab.id}
+            onClick={() => {
+              setActiveTab(tab.id);
+              setHighlightPosition(index * (100 / TABS.length));
             }}
-          />
-
-          {TABS.map((tab, index) => (
-            <div
-              key={tab.id}
-              onClick={() => {
-                setActiveTab(tab.id);
-                setHighlightPosition(index * (100 / TABS.length));
-              }}
-              style={{
-                flex: 1,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                position: "relative",
-                padding: "4px 0",
-              }}
-            >
-              <span style={{ fontSize: "22px", marginBottom: "2px", fontWeight: 700 }}>{tab.icon}</span>
-              <span style={{ fontSize: "10px", color: "white", fontWeight: 700 }}>{tab.label}</span>
-            </div>
-          ))}
-        </div>
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              position: "relative",
+              padding: "4px 0",
+            }}
+          >
+            <span style={{ fontSize: "22px", marginBottom: "2px", fontWeight: 700 }}>{tab.icon}</span>
+            <span style={{ fontSize: "10px", color: "white", fontWeight: 700 }}>{tab.label}</span>
+          </div>
+        ))}
       </div>
 
       {/* Global styles */}
