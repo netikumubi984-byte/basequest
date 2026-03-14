@@ -63,22 +63,22 @@ export default function App() {
         </div>
       </div>
 
-      {/* Mobile floating bottom nav with visible shadow */}
+      {/* Mobile floating bottom nav with semi-transparent bar and shadow */}
       <div style={{
         position: "fixed",
-        bottom: "26px", // pushed upward
+        bottom: "26px",
         left: "50%",
         transform: "translateX(-50%)",
         width: "90%",
         maxWidth: "480px",
         display: "flex",
         justifyContent: "space-between",
-        background: "rgba(10,11,15,0.9)", // slightly more opaque for shadow visibility
+        background: "rgba(10,11,15,0.6)", // semi-transparent bar
         borderRadius: "9999px",
         padding: "4px 0",
         backdropFilter: "blur(15px)",
         zIndex: 100,
-        boxShadow: "0 12px 20px -6px rgba(0,0,0,0.7)", // soft visible shadow below
+        boxShadow: "0 12px 24px -6px rgba(0,0,0,0.7)", // visible shadow below
       }} className="mobile-nav">
 
         {/* Sliding highlight */}
@@ -90,7 +90,7 @@ export default function App() {
             width: `${100 / TABS.length}%`,
             height: "96%",
             borderRadius: "9999px",
-            background: "rgba(0,82,255,0.3)",
+            background: "rgba(0,82,255,0.3)", // semi-transparent highlight
             backdropFilter: "blur(10px)",
             transition: "left 0.3s",
             zIndex: -1,
