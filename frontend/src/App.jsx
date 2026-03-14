@@ -122,7 +122,11 @@ export default function App() {
                   : "invert(100%)", // white
               }}
             />
-            <span style={{ fontSize: "10px", color: "white", fontWeight: 700 }}>{tab.label}</span>
+            <span style={{
+              fontSize: "10px",
+              fontWeight: 700,
+              color: activeTab === tab.id ? "#0052FF" : "white", // selected text blue
+            }}>{tab.label}</span>
           </div>
         ))}
       </div>
