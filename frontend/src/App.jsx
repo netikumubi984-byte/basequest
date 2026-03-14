@@ -30,6 +30,7 @@ export default function App() {
       case "dashboard": return <Dashboard quests={quests} wallet={wallet} setActiveTab={setActiveTab} />;
       case "quests": return <QuestBoard quests={quests} wallet={wallet} />;
       case "bossraid": return <BossRaid wallet={wallet} />;
+      case "leaderboard": return <Leaderboard  wallet={wallet} />;
       case "analyzer": return <WalletAnalyzer wallet={wallet} />;
       default: return <Dashboard quests={quests} wallet={wallet} setActiveTab={setActiveTab} />;
     }
