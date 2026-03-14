@@ -8,10 +8,10 @@ import BossRaid from "./components/BossRaid";
 import WalletAnalyzer from "./components/WalletAnalyzer";
 
 const TABS = [
-  { id: "dashboard", label: "Dashboard", icon: "/dashboard.png" },
-  { id: "quests", label: "Quests", icon: "/quests.png" },
-  { id: "bossraid", label: "Boss", icon: "/boss.png" },
-  { id: "analyzer", label: "Wallet", icon: "/wallet.png" },
+  { id: "dashboard", label: "Dashboard", icon: "/dashboard.svg" },
+  { id: "quests", label: "Quests", icon: "/quests.svg" },
+  { id: "bossraid", label: "Boss", icon: "/boss.svg" },
+  { id: "analyzer", label: "Wallet", icon: "/wallet.svg" },
 ];
 
 export default function App() {
@@ -34,15 +34,12 @@ export default function App() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a0b0f", color: "white", fontFamily: "'Inter', sans-serif" }}>
-      {/* Navbar */}
       <Navbar wallet={walletWithProfile} />
 
-      {/* Page content */}
       <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 16px 100px" }}>
         {renderTab()}
       </div>
 
-      {/* Footer */}
       <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", padding: "24px 16px 100px", textAlign: "center", marginTop: "40px" }}>
         <div style={{ display: "flex", justifyContent: "center", gap: "24px", marginBottom: "12px" }}>
           <a
@@ -63,7 +60,6 @@ export default function App() {
         </div>
       </div>
 
-      {/* Mobile floating bottom nav */}
       <div style={{
         position: "fixed",
         bottom: "16px",
@@ -80,7 +76,6 @@ export default function App() {
         zIndex: 100,
       }} className="mobile-nav">
 
-        {/* Sliding highlight */}
         <div
           style={{
             position: "absolute",
@@ -112,16 +107,26 @@ export default function App() {
               cursor: "pointer",
               position: "relative",
               padding: "2px 0",
-              transform: "translateY(2px)", // moved down a little
+              transform: "translateY(2px)",
             }}
           >
-            <img src={tab.icon} alt={tab.label} style={{ width: "22px", height: "22px", marginBottom: "1px" }} />
+            <img
+              src={tab.icon}
+              alt={tab.label}
+              style={{
+                width: "22px",
+                height: "22px",
+                marginBottom: "1px",
+                filter: activeTab === tab.id
+                  ? "invert(37%) sepia(98%) saturate(4869%) hue-rotate(199deg) brightness(101%) contrast(101%)" // blue
+                  : "invert(100%)", // white
+              }}
+            />
             <span style={{ fontSize: "10px", color: "white", fontWeight: 700 }}>{tab.label}</span>
           </div>
         ))}
       </div>
 
-      {/* Global styles */}
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: #0a0b0f; }
