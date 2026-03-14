@@ -14,7 +14,7 @@ const TABS = [
   { id: "analyzer", label: "Wallet", icon: "/wallet.svg" },
 ];
 
-const SELECTED_BLUE = "#0052FF";
+const SELECTED_BLUE = "#000000";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState("dashboard");
