@@ -75,7 +75,7 @@ export default function App() {
         justifyContent: "space-between",
         background: "rgba(10,11,15,0.6)",
         borderRadius: "9999px",
-        padding: "4px 2px",
+        padding: "2px 2px",   // reduced height
         backdropFilter: "blur(15px)",
         zIndex: 100,
         boxShadow: "0 6px 10px rgba(0,0,0,0.35)",
@@ -88,7 +88,7 @@ export default function App() {
             top: 0,
             left: `${highlightPosition}%`,
             width: `${100 / TABS.length}%`,
-            height: "100%",
+            height: "90%",        // slightly shorter highlight
             borderRadius: "9999px",
             background: "rgba(0,82,255,0.3)",
             backdropFilter: "blur(10px)",
@@ -115,8 +115,8 @@ export default function App() {
               padding: "2px 0",
             }}
           >
-            <span style={{ fontSize: "22px", marginBottom: "1px" }}>{tab.icon}</span>
-            <span style={{ fontSize: "10px", color: "white", fontWeight: 600 }}>{tab.label}</span>
+            <span style={{ fontSize: "22px", marginBottom: "1px", fontWeight: 700 }}>{tab.icon}</span>
+            <span style={{ fontSize: "10px", color: "white", fontWeight: 700 }}>{tab.label}</span>
           </div>
         ))}
       </div>
