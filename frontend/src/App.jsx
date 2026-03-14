@@ -20,6 +20,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const wallet = useWallet();
   const quests = useQuests(wallet);
+
   const walletWithProfile = { ...wallet, userProfile: quests.userProfile };
 
   const renderTab = () => {
@@ -34,18 +35,28 @@ export default function App() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a0b0f", color: "white", fontFamily: "'Inter', sans-serif" }}>
-
+    <div style={{
+      minHeight: "100vh",
+      background: "#0a0b0f",
+      color: "white",
+      fontFamily: "'Inter', sans-serif",
+    }}>
+      
       {/* Navbar */}
       <Navbar wallet={walletWithProfile} />
 
       {/* Page content */}
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 16px 100px" }}>
+      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 16px 80px" }}>
         {renderTab()}
       </div>
 
       {/* Footer */}
-      <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", padding: "24px 16px 100px", textAlign: "center", marginTop: "40px" }}>
+      <div style={{
+        borderTop: "1px solid rgba(255,255,255,0.06)",
+        padding: "24px 16px 100px",
+        textAlign: "center",
+        marginTop: "40px",
+      }}>
         <div style={{ display: "flex", justifyContent: "center", gap: "24px", marginBottom: "12px" }}>
           <a
             href="https://twitter.com/Jee_phoenix"
@@ -69,17 +80,18 @@ export default function App() {
       <div style={{
         display: "flex",
         position: "fixed",
-        bottom: "16px",
+        bottom: "12px",
         left: "50%",
         transform: "translateX(-50%)",
+        width: "90%",
+        maxWidth: "480px",
         background: "rgba(10,11,15,0.95)",
         borderRadius: "24px",
-        padding: "6px 12px",
-        gap: "8px",
+        padding: "4px 8px",
+        gap: "6px",
         boxShadow: "0 6px 20px rgba(0,0,0,0.25)",
         zIndex: 100,
       }} className="mobile-nav">
-
         {TABS.map(tab => (
           <div
             key={tab.id}
@@ -95,7 +107,7 @@ export default function App() {
               background: activeTab === tab.id ? "linear-gradient(135deg, #0052ff, #0041cc)" : "transparent",
               color: activeTab === tab.id ? "white" : "#8892a4",
               fontWeight: activeTab === tab.id ? 700 : 400,
-              fontSize: "11px",
+              fontSize: "12px",
               cursor: "pointer",
               textAlign: "center",
               transition: "all 0.2s",
