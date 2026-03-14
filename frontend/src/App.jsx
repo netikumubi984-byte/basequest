@@ -63,22 +63,21 @@ export default function App() {
         </div>
       </div>
 
-      {/* Mobile floating bottom nav with semi-transparent bar and shadow */}
+      {/* Mobile floating bottom nav with liquid glass highlight */}
       <div style={{
         position: "fixed",
-        bottom: "26px",
+        bottom: "16px", // moved slightly down
         left: "50%",
         transform: "translateX(-50%)",
         width: "90%",
         maxWidth: "480px",
         display: "flex",
         justifyContent: "space-between",
-        background: "rgba(10,11,15,0.6)", // semi-transparent bar
+        background: "rgba(10,11,15,0.45)", // increased transparency
         borderRadius: "9999px",
-        padding: "4px 0",
-        backdropFilter: "blur(15px)",
+        padding: "2px 0", // reduced height
+        backdropFilter: "blur(18px)", // glass effect
         zIndex: 100,
-        boxShadow: "0 12px 24px -6px rgba(0,0,0,0.7)", // visible shadow below
       }} className="mobile-nav">
 
         {/* Sliding highlight */}
@@ -90,8 +89,8 @@ export default function App() {
             width: `${100 / TABS.length}%`,
             height: "96%",
             borderRadius: "9999px",
-            background: "rgba(0,82,255,0.3)", // semi-transparent highlight
-            backdropFilter: "blur(10px)",
+            background: "rgba(0,82,255,0.25)", // semi-transparent liquid glass highlight
+            backdropFilter: "blur(12px)",
             transition: "left 0.3s",
             zIndex: -1,
           }}
@@ -112,10 +111,11 @@ export default function App() {
               justifyContent: "center",
               cursor: "pointer",
               position: "relative",
-              padding: "4px 0",
+              padding: "2px 0", // reduce vertical padding
+              transform: "translateY(-2px)", // move text/icon slightly up
             }}
           >
-            <span style={{ fontSize: "22px", marginBottom: "2px", fontWeight: 700 }}>{tab.icon}</span>
+            <span style={{ fontSize: "22px", marginBottom: "0", fontWeight: 700 }}>{tab.icon}</span>
             <span style={{ fontSize: "10px", color: "white", fontWeight: 700 }}>{tab.label}</span>
           </div>
         ))}
