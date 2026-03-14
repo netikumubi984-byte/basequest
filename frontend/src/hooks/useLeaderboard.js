@@ -59,10 +59,10 @@ export function useLeaderboard(currentAddress, refreshInterval = 60000) {
       setEntries(sorted);
       setLastUpdated(new Date());
       setError(null);
-    } catch (err) {
+    } } catch (err) {
       console.error("Leaderboard fetch error:", err);
-      setError(err.message || "Failed to load leaderboard");
-    } finally {
+      setError(err.message || err.reason || err.code || JSON.stringify(err) || "Failed to load leaderboard");
+} finally {
       setLoading(false);
     }
   }, [currentAddress]);
