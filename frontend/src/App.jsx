@@ -24,7 +24,6 @@ export default function App() {
 
   const wallet = useWallet();
   const quests = useQuests(wallet);
-
   const walletWithProfile = { ...wallet, userProfile: quests.userProfile };
 
   const pageIndex = {
@@ -58,27 +57,26 @@ export default function App() {
           width: "100%"
         }}
       >
-        {/* Main pages container */}
+        {/* Main sliding pages */}
         <div
           style={{
-            display: isLeaderboard ? "none" : "flex", // hide flex container when leaderboard
+            display: "flex",
             width: "400%",
-            transform: `translateX(-${pageIndex[page] * 25}%)`,
+            transform: isLeaderboard
+              ? `translateX(-${pageIndex[page] * 25}%)`
+              : `translateX(-${pageIndex[page] * 25}%)`,
             transition: "transform 0.35s ease"
           }}
         >
           <div style={{ width: "25%" }}>
             <Dashboard quests={quests} wallet={wallet} setPage={setPage} />
           </div>
-
           <div style={{ width: "25%" }}>
             <QuestBoard quests={quests} wallet={wallet} />
           </div>
-
           <div style={{ width: "25%" }}>
             <BossRaid wallet={wallet} />
           </div>
-
           <div style={{ width: "25%" }}>
             <WalletAnalyzer wallet={wallet} />
           </div>
@@ -89,9 +87,12 @@ export default function App() {
           <div
             style={{
               width: "100%",
-              position: "relative",
+              position: "absolute",
+              top: 0,
               left: 0,
-              transition: "left 0.35s ease"
+              zIndex: 10,
+              transition: "opacity 0.35s ease",
+              background: "#0a0b0f"
             }}
           >
             <Leaderboard wallet={wallet} />
@@ -131,7 +132,6 @@ export default function App() {
             zIndex: -1
           }}
         />
-
         {TABS.map((tab, index) => (
           <div
             key={tab.id}
