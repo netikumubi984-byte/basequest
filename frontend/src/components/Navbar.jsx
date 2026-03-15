@@ -74,15 +74,9 @@ export default function Navbar({ wallet }) {
       }}>
 
         {/* Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 34, height: 34, borderRadius: 10, background: "rgba(0,82,255,0.15)", border: "1px solid rgba(0,82,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flexShrink: 0 }}>
-            <img src="/logo.png" alt="BQ" style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              onError={e => { e.target.style.display = "none"; e.target.parentNode.innerHTML = '<span style="color:#00d4ff;font-weight:900;font-size:12px">BQ</span>'; }} />
-          </div>
-          <span className="dh" style={{ color: "white", fontWeight: 900, fontSize: m ? "16px" : "18px", letterSpacing: "-0.5px" }}>
-            Base<span style={{ color: "#00d4ff" }}>Quest</span>
-          </span>
-        </div>
+        <span className="dh" style={{ color: "white", fontWeight: 900, fontSize: m ? "16px" : "18px", letterSpacing: "-0.5px" }}>
+          Base<span style={{ color: "#00d4ff" }}>Quest</span>
+        </span>
 
         {/* Right side */}
         <div style={{ display: "flex", alignItems: "center", gap: m ? 7 : 10 }}>
