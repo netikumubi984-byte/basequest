@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useWallet } from "./hooks/useWallet";
 import { useQuests } from "./hooks/useQuests";
 import Navbar from "./components/Navbar";
@@ -20,49 +20,48 @@ const ICON_BLUE = "#0082FF";
 export default function App() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [highlightPosition, setHighlightPosition] = useState(0);
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const wallet = useWallet();
   const quests = useQuests(wallet);
-
   const walletWithProfile = { ...wallet, userProfile: quests.userProfile };
 
-  const renderTab = () => {
-    switch (activeTab) {
-      case "dashboard": return <Dashboard quests={quests} wallet={wallet} setActiveTab={setActiveTab} />;
-      case "quests": return <QuestBoard quests={quests} wallet={wallet} />;
-      case "bossraid": return <BossRaid wallet={wallet} />;
-      case "leaderboard": return <Leaderboard wallet={wallet} />;
-      case "analyzer": return <WalletAnalyzer wallet={wallet} />;
-      default: return <Dashboard quests={quests} wallet={wallet} setActiveTab={setActiveTab} />;
-    }
-  };
+  useEffect(() => {
+    const handleResize = () => setScreenWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const pages = [
+    <Dashboard key="dashboard" quests={quests} wallet={wallet} setActiveTab={setActiveTab} />,
+    <QuestBoard key="quests" quests={quests} wallet={wallet} />,
+    <BossRaid key="bossraid" wallet={wallet} />,
+    <WalletAnalyzer key="analyzer" wallet={wallet} />,
+    <Leaderboard key="leaderboard" wallet={wallet} />,
+  ];
+
+  const pageIndex = pages.findIndex((_, i) => {
+    const ids = ["dashboard", "quests", "bossraid", "analyzer", "leaderboard"];
+    return ids[i] === activeTab;
+  });
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a0b0f", color: "white", fontFamily: "'Inter', sans-serif" }}>
       <Navbar wallet={walletWithProfile} />
 
-      <div style={{
-        maxWidth: "1100px",
-        margin: "0 auto",
-        padding: "0 16px 100px",
-        overflow: "hidden"
-      }}>
-        <div style={{
-          display: "flex",
-          transition: "transform 0.4s ease",
-          width: "500%",
-          transform: `translateX(${
-            activeTab === "dashboard" ? "0%" :
-            activeTab === "quests" ? "-100%" :
-            activeTab === "bossraid" ? "-200%" :
-            activeTab === "analyzer" ? "-300%" :
-            activeTab === "leaderboard" ? "-400%" : "0%"
-          })`
-        }}>
-          <div style={{ width: "100%", flexShrink: 0 }}>{renderTab()}</div>
-          <div style={{ width: "100%", flexShrink: 0 }}>{activeTab === "quests" && renderTab()}</div>
-          <div style={{ width: "100%", flexShrink: 0 }}>{activeTab === "bossraid" && renderTab()}</div>
-          <div style={{ width: "100%", flexShrink: 0 }}>{activeTab === "analyzer" && renderTab()}</div>
-          <div style={{ width: "100%", flexShrink: 0 }}>{activeTab === "leaderboard" && renderTab()}</div>
+      <div style={{ overflow: "hidden" }}>
+        <div
+          style={{
+            display: "flex",
+            width: screenWidth * pages.length,
+            transform: `translateX(-${pageIndex * screenWidth}px)`,
+            transition: "transform 0.4s ease",
+          }}
+        >
+          {pages.map((page, i) => (
+            <div key={i} style={{ width: screenWidth, flexShrink: 0 }}>
+              {page}
+            </div>
+          ))}
         </div>
       </div>
 
