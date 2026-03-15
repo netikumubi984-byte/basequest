@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { getLevelInfo, shortAddr } from "../utils/contracts";
 
-const Icon = ({ name, size = 24, style = {} }) => (
-  <img src={`/${name}.svg`} alt={name} width={size} height={size} style={{ display: "block", ...style }} />
+const Icon = ({ src, size = 24, style = {} }) => (
+  <img src={src} alt="" width={size} height={size} style={{ display: "block", ...style }} />
 );
 
 const FONTS = `
@@ -38,7 +38,7 @@ export default function Dashboard({ quests, wallet, setPage }) {
 
   if (!isConnected) return (
     <div className="db" style={{ padding: m ? "48px 0" : "72px 0", textAlign: "center" }}>
-      <Icon name="cube" size={m ? 48 : 64} style={{ margin: "0 auto 16px", opacity: 0.85 }} />
+      <Icon src="/cube.svg" size={m ? 48 : 64} style={{ margin: "0 auto 16px", opacity: 0.85 }} />
       <h1 className="dh" style={{ color: "white", fontSize: m ? "18px" : "22px", fontWeight: 900, margin: "0 0 10px", lineHeight: 1.3 }}>
         Skill issue if you're not on chain yet.
       </h1>
@@ -50,18 +50,18 @@ export default function Dashboard({ quests, wallet, setPage }) {
 
   if (loading && !userProfile) return (
     <div className="db" style={{ padding: m ? "48px 0" : "72px 0", textAlign: "center" }}>
-      <Icon name="hourglass" size={36} style={{ margin: "0 auto 14px", opacity: 0.7 }} />
+      <Icon src="/hourglass.svg" size={36} style={{ margin: "0 auto 14px", opacity: 0.7 }} />
       <div style={{ color: "#8892a4", fontSize: m ? "13px" : "15px" }}>Loading your profile...</div>
     </div>
   );
 
   const stats = [
-    { icon: "check",    value: userProfile?.tasksCompleted?.toLocaleString() ?? "0", color: "#00e676", label: "TASKS DONE"   },
-    { icon: "fire",     value: userProfile?.streakCount ?? "0",                       color: "#f0b429", label: "DAY STREAK"  },
-    { icon: "map",      value: `${completedCount}/${totalDaily}`,                     color: "#4da6ff", label: "DAILY QUESTS"},
-    { icon: "calendar", value: userProfile?.joinedAt
+    { src: "/check.svg",    value: userProfile?.tasksCompleted?.toLocaleString() ?? "0", color: "#00e676", label: "TASKS DONE"    },
+    { src: "/fire.svg",     value: userProfile?.streakCount ?? "0",                       color: "#f0b429", label: "DAY STREAK"   },
+    { src: "/map.svg",      value: `${completedCount}/${totalDaily}`,                     color: "#4da6ff", label: "DAILY QUESTS" },
+    { src: "/calendar.svg", value: userProfile?.joinedAt
         ? new Date(userProfile.joinedAt * 1000).toLocaleDateString("en-US", { month: "short", year: "numeric" })
-        : "—",                                                                         color: "#c084fc", label: "MEMBER SINCE"},
+        : "—",                                                                             color: "#c084fc", label: "MEMBER SINCE" },
   ];
 
   return (
@@ -69,7 +69,7 @@ export default function Dashboard({ quests, wallet, setPage }) {
 
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: m ? 14 : 20 }}>
-        <Icon name="wave" size={m ? 18 : 22} style={{ opacity: 0.85 }} />
+        <Icon src="/wave.svg" size={m ? 18 : 22} style={{ opacity: 0.85 }} />
         <div>
           <h2 className="dh" style={{ color: "white", fontSize: m ? "17px" : "22px", fontWeight: 900, margin: "0 0 2px", letterSpacing: "-0.3px" }}>
             Welcome back, <span style={{ color: "#4da6ff" }}>{userProfile?.usernameSet ? userProfile.username : shortAddr(address)}</span>
@@ -82,18 +82,14 @@ export default function Dashboard({ quests, wallet, setPage }) {
       <div style={{ ...gBlue, padding: m ? "14px" : "20px", marginBottom: m ? 10 : 14 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 14 }}>
 
-          {/* Badge + level info */}
+          {/* Badge + info */}
           <div style={{ display: "flex", alignItems: "center", gap: m ? 9 : 12, minWidth: 0 }}>
-            <div style={{
-              width: m ? 42 : 52, height: m ? 42 : 52, borderRadius: m ? 12 : 16, flexShrink: 0,
-              background: `${levelInfo.current.color}22`, border: `2px solid ${levelInfo.current.color}55`,
-              display: "flex", alignItems: "center", justifyContent: "center"
-            }}>
-              <Icon name="level" size={m ? 20 : 26} style={{ filter: `drop-shadow(0 0 5px ${levelInfo.current.color})` }} />
+            <div style={{ width: m ? 42 : 52, height: m ? 42 : 52, borderRadius: m ? 12 : 16, flexShrink: 0, background: `${levelInfo.current.color}22`, border: `2px solid ${levelInfo.current.color}55`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Icon src={levelInfo.current.icon} size={m ? 24 : 30} style={{ filter: `drop-shadow(0 0 5px ${levelInfo.current.color})` }} />
             </div>
             <div style={{ minWidth: 0 }}>
               <div style={{ color: "#7a8799", fontSize: m ? "9px" : "10px", fontWeight: 700, letterSpacing: "0.1em", marginBottom: 2 }}>CURRENT LEVEL</div>
-              <div className="dh" style={{ color: levelInfo.current.color, fontSize: m ? "18px" : "22px", fontWeight: 900, lineHeight: 1, textShadow: `0 0 16px ${levelInfo.current.color}66` }}>
+              <div className="dh" style={{ color: levelInfo.current.color, fontSize: m ? "17px" : "21px", fontWeight: 900, lineHeight: 1, textShadow: `0 0 16px ${levelInfo.current.color}66` }}>
                 {levelInfo.current.level} — {levelInfo.current.name}
               </div>
             </div>
@@ -120,12 +116,7 @@ export default function Dashboard({ quests, wallet, setPage }) {
               </span>
             </div>
             <div style={{ height: m ? 5 : 7, background: "rgba(255,255,255,0.07)", borderRadius: 99, overflow: "hidden" }}>
-              <div style={{
-                height: "100%", borderRadius: 99, transition: "width 0.6s ease",
-                width: `${levelInfo.progress}%`,
-                background: `linear-gradient(90deg, ${levelInfo.current.color}, #4da6ff)`,
-                boxShadow: `0 0 10px ${levelInfo.current.color}88`
-              }} />
+              <div style={{ height: "100%", borderRadius: 99, transition: "width 0.6s ease", width: `${levelInfo.progress}%`, background: `linear-gradient(90deg,${levelInfo.current.color},#4da6ff)`, boxShadow: `0 0 10px ${levelInfo.current.color}88` }} />
             </div>
           </>
         )}
@@ -133,9 +124,9 @@ export default function Dashboard({ quests, wallet, setPage }) {
 
       {/* Stat Cards */}
       <div style={{ display: "grid", gridTemplateColumns: m ? "1fr 1fr" : "repeat(4,1fr)", gap: m ? 7 : 10, marginBottom: m ? 10 : 14 }}>
-        {stats.map(({ icon, value, color, label }) => (
+        {stats.map(({ src, value, color, label }) => (
           <div key={label} className="sc" style={{ ...gBase, padding: m ? "13px 10px" : "16px 12px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: m ? 4 : 6, transition: "transform 0.18s, box-shadow 0.18s" }}>
-            <Icon name={icon} size={m ? 18 : 22} style={{ opacity: 0.8 }} />
+            <Icon src={src} size={m ? 18 : 22} style={{ opacity: 0.8 }} />
             <div className="dh" style={{ color, fontWeight: 900, fontSize: m ? "15px" : "18px", lineHeight: 1 }}>{value}</div>
             <div style={{ color: "#4a5568", fontSize: m ? "8px" : "9px", fontWeight: 700, letterSpacing: "0.07em" }}>{label}</div>
           </div>
@@ -152,7 +143,7 @@ export default function Dashboard({ quests, wallet, setPage }) {
         onTouchStart={e => e.currentTarget.style.transform = "scale(0.98)"}
         onTouchEnd={e =>   e.currentTarget.style.transform = "scale(1)"}
       >
-        <Icon name="trophy" size={m ? 16 : 18} style={{ opacity: 0.9 }} />
+        <Icon src="/trophy.svg" size={m ? 16 : 18} style={{ opacity: 0.9 }} />
         View Leaderboard
         <span style={{ marginLeft: "auto", opacity: 0.35, fontSize: 16 }}>›</span>
       </button>
