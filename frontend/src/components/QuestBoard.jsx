@@ -140,7 +140,7 @@ export default function QuestBoard({ quests, wallet }) {
 
   if (!isConnected) return (
     <div className="db" style={{ padding: m ? "48px 0" : "72px 0", textAlign: "center" }}>
-      <Icon src="/map.svg" size={m ? 48 : 64} style={{ margin: "0 auto 16px", opacity: 0.8 }} />
+      <Icon src="/quests.svg" size={m ? 48 : 64} style={{ margin: "0 auto 16px", opacity: 0.8 }} />
       <div className="dh" style={{ color: "white", fontSize: m ? "18px" : "22px", fontWeight: 800, marginBottom: 8 }}>Quest Board</div>
       <div className="db" style={{ color: "#8892a4", fontSize: m ? "13px" : "14px" }}>Connect your wallet to start earning XP!</div>
     </div>
@@ -151,7 +151,7 @@ export default function QuestBoard({ quests, wallet }) {
 
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: m ? 14 : 20 }}>
-        <Icon src="/map.svg" size={m ? 18 : 22} style={{ opacity: 0.85 }} />
+        <Icon src="/quests.svg" size={m ? 18 : 22} style={{ opacity: 0.85 }} />
         <div>
           <h2 className="dh" style={{ color: "white", fontSize: m ? "17px" : "22px", fontWeight: 900, margin: "0 0 2px" }}>Quest Board</h2>
           <p className="db" style={{ color: "#5a6478", fontSize: m ? "10px" : "11px", margin: 0, fontWeight: 600, letterSpacing: "0.07em" }}>
