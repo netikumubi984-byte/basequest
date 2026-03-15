@@ -12,25 +12,11 @@ export default function Dashboard({ quests, wallet, setPage }) {
       <div style={{ padding: "60px 20px", textAlign: "center" }}>
         <div style={{ fontSize: "80px", marginBottom: "20px" }}>🟦</div>
 
-        <h1
-          style={{
-            color: "white",
-            fontSize: "28px",
-            fontWeight: "900",
-            margin: "0 0 12px"
-          }}
-        >
+        <h1 style={{ color: "white", fontSize: "28px", fontWeight: "900", margin: "0 0 12px" }}>
           Skill issue if you're not on chain yet.
         </h1>
 
-        <p
-          style={{
-            color: "#8892a4",
-            fontSize: "16px",
-            maxWidth: "400px",
-            margin: "0 auto 8px"
-          }}
-        >
+        <p style={{ color: "#8892a4", fontSize: "16px", maxWidth: "400px", margin: "0 auto 8px" }}>
           Stack XP. Build legacy. Eat the airdrop.
         </p>
       </div>
@@ -50,14 +36,7 @@ export default function Dashboard({ quests, wallet, setPage }) {
     <div style={{ padding: "24px 0" }}>
 
       <div style={{ marginBottom: "24px" }}>
-        <h2
-          style={{
-            color: "white",
-            fontSize: "22px",
-            fontWeight: "800",
-            margin: "0 0 4px"
-          }}
-        >
+        <h2 style={{ color: "white", fontSize: "22px", fontWeight: "800", margin: "0 0 4px" }}>
           👋 Welcome back {userProfile?.usernameSet ? userProfile.username : shortAddr(address)}
         </h2>
 
@@ -87,14 +66,7 @@ export default function Dashboard({ quests, wallet, setPage }) {
           >
 
             <div>
-              <div
-                style={{
-                  color: "#8892a4",
-                  fontSize: "12px",
-                  fontWeight: "700",
-                  marginBottom: "4px"
-                }}
-              >
+              <div style={{ color: "#8892a4", fontSize: "12px", fontWeight: "700", marginBottom: "4px" }}>
                 CURRENT LEVEL
               </div>
 
@@ -102,13 +74,7 @@ export default function Dashboard({ quests, wallet, setPage }) {
                 <span style={{ fontSize: "36px" }}>{levelInfo.current.emoji}</span>
 
                 <div>
-                  <div
-                    style={{
-                      color: levelInfo.current.color,
-                      fontWeight: "900",
-                      fontSize: "22px"
-                    }}
-                  >
+                  <div style={{ color: levelInfo.current.color, fontWeight: "900", fontSize: "22px" }}>
                     Level {levelInfo.current.level}
                   </div>
                 </div>
@@ -116,13 +82,7 @@ export default function Dashboard({ quests, wallet, setPage }) {
             </div>
 
             <div style={{ textAlign: "right" }}>
-              <div
-                style={{
-                  color: "#f0b429",
-                  fontWeight: "900",
-                  fontSize: "32px"
-                }}
-              >
+              <div style={{ color: "#f0b429", fontWeight: "900", fontSize: "32px" }}>
                 {levelInfo.xp.toLocaleString()}
               </div>
 
@@ -155,7 +115,7 @@ export default function Dashboard({ quests, wallet, setPage }) {
         >
           <div style={{ fontSize: "24px", marginBottom: "8px" }}>✅</div>
           <div style={{ color: "#00c853", fontWeight: "800", fontSize: "20px" }}>
-            {userProfile?.tasksCompleted || 0}
+            {userProfile?.tasksCompleted?.toLocaleString() || "0"}
           </div>
           <div style={{ color: "#8892a4", fontSize: "11px" }}>
             Tasks Completed
@@ -173,10 +133,51 @@ export default function Dashboard({ quests, wallet, setPage }) {
         >
           <div style={{ fontSize: "24px", marginBottom: "8px" }}>🔥</div>
           <div style={{ color: "#f0b429", fontWeight: "800", fontSize: "20px" }}>
-            {userProfile?.streakCount || 0}
+            {userProfile?.streakCount || "0"}
           </div>
           <div style={{ color: "#8892a4", fontSize: "11px" }}>
             Day Streak
+          </div>
+        </div>
+
+        <div
+          style={{
+            background: "rgba(255,255,255,0.03)",
+            border: "1px solid rgba(255,255,255,0.07)",
+            borderRadius: "16px",
+            padding: "16px",
+            textAlign: "center"
+          }}
+        >
+          <div style={{ fontSize: "24px", marginBottom: "8px" }}>🗺️</div>
+          <div style={{ color: "#0052ff", fontWeight: "800", fontSize: "20px" }}>
+            {completedCount}/{totalDaily}
+          </div>
+          <div style={{ color: "#8892a4", fontSize: "11px" }}>
+            Daily Progress
+          </div>
+        </div>
+
+        <div
+          style={{
+            background: "rgba(255,255,255,0.03)",
+            border: "1px solid rgba(255,255,255,0.07)",
+            borderRadius: "16px",
+            padding: "16px",
+            textAlign: "center"
+          }}
+        >
+          <div style={{ fontSize: "24px", marginBottom: "8px" }}>📅</div>
+          <div style={{ color: "#a855f7", fontWeight: "800", fontSize: "20px" }}>
+            {userProfile?.joinedAt
+              ? new Date(userProfile.joinedAt * 1000).toLocaleDateString("en-US", {
+                  month: "short",
+                  year: "numeric"
+                })
+              : "—"}
+          </div>
+          <div style={{ color: "#8892a4", fontSize: "11px" }}>
+            Member Since
           </div>
         </div>
 
