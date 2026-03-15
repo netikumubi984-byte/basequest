@@ -25,10 +25,10 @@ const getScoreLevel = s => SCORE_LEVELS.find(l => s >= l.min && s <= l.max) || S
 const shortHash     = h => h ? h.slice(0, 8) + "..." + h.slice(-6) : "—";
 
 const TX_ROWS = [
-  { key: "firstTxOnBase",    icon: "/seedling.svg", label: "First Transaction",   valueColor: "#f0b429" },
-  { key: "latestTxOnBase",   icon: "/clock.svg",    label: "Latest Transaction",  valueColor: "#f0b429" },
-  { key: "largestTxOnBase",  icon: "/trophy.svg",   label: "Largest Transaction", valueColor: "#00c853" },
-  { key: "smallestTxOnBase", icon: "/micro.svg",    label: "Smallest Transaction",valueColor: "#ff6b6b" },
+  { key: "firstTxOnBase",    icon: "/seedling.svg", label: "First Transaction",    valueColor: "#f0b429" },
+  { key: "latestTxOnBase",   icon: "/clock.svg",    label: "Latest Transaction",   valueColor: "#f0b429" },
+  { key: "largestTxOnBase",  icon: "/trophy.svg",   label: "Largest Transaction",  valueColor: "#00c853" },
+  { key: "smallestTxOnBase", icon: "/micro.svg",    label: "Smallest Transaction", valueColor: "#ff6b6b" },
 ];
 
 export default function WalletAnalyzer({ wallet }) {
@@ -87,29 +87,36 @@ export default function WalletAnalyzer({ wallet }) {
         <label style={{ color: "#8892a4", fontSize: "11px", fontWeight: 600, display: "block", marginBottom: 7, letterSpacing: "0.07em" }}>
           WALLET ADDRESS
         </label>
-        <div style={{ display: "flex", gap: 8 }}>
+
+        {/* Pill search bar */}
+        <div style={{ display: "flex", alignItems: "center", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 999, padding: "4px 4px 4px 14px", gap: 8 }}>
+          <Icon src="/search.svg" size={m ? 14 : 15} style={{ opacity: 0.35, flexShrink: 0 }} />
           <input
             type="text"
             placeholder="0x..."
             value={inputAddress}
             onChange={e => setInputAddress(e.target.value)}
             onKeyDown={e => e.key === "Enter" && handleAnalyze()}
-            style={{ flex: 1, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: m ? "9px 11px" : "11px 14px", color: "white", fontSize: m ? "13px" : "14px", outline: "none", fontFamily: "DM Sans, sans-serif", minWidth: 0 }}
+            style={{ flex: 1, background: "transparent", border: "none", color: "white", fontSize: m ? "13px" : "14px", outline: "none", fontFamily: "DM Sans, sans-serif", minWidth: 0, padding: "6px 0" }}
           />
           <button
             onClick={handleAnalyze}
             disabled={loading}
-            style={{ background: loading ? "rgba(0,82,255,0.3)" : "linear-gradient(135deg,#0052ff,#0041cc)", border: "none", borderRadius: 10, padding: m ? "9px 14px" : "11px 20px", color: "white", fontWeight: 800, fontSize: m ? "13px" : "14px", cursor: loading ? "not-allowed" : "pointer", whiteSpace: "nowrap", fontFamily: "Syne, sans-serif", display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}
+            style={{ background: loading ? "rgba(0,82,255,0.4)" : "linear-gradient(135deg,#0052ff,#0041cc)", border: "none", borderRadius: 999, padding: m ? "8px 14px" : "9px 18px", color: "white", fontWeight: 800, fontSize: m ? "12px" : "13px", cursor: loading ? "not-allowed" : "pointer", whiteSpace: "nowrap", fontFamily: "Syne, sans-serif", display: "flex", alignItems: "center", gap: 6, flexShrink: 0, boxShadow: "0 2px 12px rgba(0,82,255,0.3)" }}
           >
             {loading
-              ? <><Icon src="/hourglass.svg" size={14} style={{ opacity: 0.7 }} /> Analyzing</>
-              : <><Icon src="/search.svg"    size={14} style={{ opacity: 0.9 }} /> Analyze</>
+              ? <><Icon src="/hourglass.svg" size={13} style={{ opacity: 0.8 }} /> Analyzing</>
+              : <><Icon src="/search.svg"    size={13} style={{ opacity: 0.9 }} /> Analyze</>
             }
           </button>
         </div>
+
+        {/* Use connected wallet */}
         {wallet?.address && (
-          <div onClick={() => setInputAddress(wallet.address)}
-            style={{ color: "#4da6ff", fontSize: "12px", fontWeight: 600, marginTop: 9, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>
+          <div
+            onClick={() => setInputAddress(wallet.address)}
+            style={{ color: "#4da6ff", fontSize: "12px", fontWeight: 600, marginTop: 10, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 5 }}
+          >
             <Icon src="/wallet.svg" size={13} style={{ opacity: 0.8 }} />
             Use connected wallet
           </div>
@@ -127,7 +134,7 @@ export default function WalletAnalyzer({ wallet }) {
       {/* Loading */}
       {loading && (
         <div style={{ textAlign: "center", padding: m ? "32px 0" : "48px 0", color: "#8892a4" }}>
-          <Icon src="/search.svg" size={m ? 28 : 36} style={{ margin: "0 auto 12px", opacity: 0.5 }} />
+          <Icon src="/search.svg" size={m ? 28 : 36} style={{ margin: "0 auto 12px", opacity: 0.4 }} />
           <div style={{ fontSize: m ? "13px" : "14px" }}>Fetching on-chain data...</div>
         </div>
       )}
@@ -144,9 +151,7 @@ export default function WalletAnalyzer({ wallet }) {
             </div>
             <div className="dh" style={{ color: "white", fontSize: m ? "16px" : "18px", fontWeight: 800, marginTop: 8 }}>{scoreLevel.label}</div>
             <div style={{ color: "#5a6478", fontSize: "12px", marginTop: 4 }}>out of 100</div>
-
-            {/* Score bar */}
-            <div style={{ height: 6, background: "rgba(255,255,255,0.07)", borderRadius: 99, overflow: "hidden", marginTop: 16, maxWidth: 200, margin: "16px auto 0" }}>
+            <div style={{ height: 6, background: "rgba(255,255,255,0.07)", borderRadius: 99, overflow: "hidden", margin: "16px auto 0", maxWidth: 200 }}>
               <div style={{ height: "100%", width: `${analysis.baseScore}%`, background: `linear-gradient(90deg,${scoreLevel.color},#4da6ff)`, borderRadius: 99, transition: "width 0.8s ease" }} />
             </div>
           </div>
@@ -154,15 +159,15 @@ export default function WalletAnalyzer({ wallet }) {
           {/* Stats grid */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: m ? 7 : 10 }}>
             {[
-              { icon: "/swap.svg",    label: "Total Txs",  value: analysis.totalTxs.toLocaleString(), color: "#4da6ff" },
-              { icon: "/calendar.svg",label: "Wallet Age", value: analysis.walletAgeDays + "d",        color: "#c084fc" },
-              { icon: "/deploy.svg",  label: "Contracts",  value: analysis.uniqueContracts,            color: "#00e676" },
-              { icon: "/warning.svg", label: "Failed Txs", value: analysis.failedCount,                color: "#ff6b6b" },
+              { icon: "/swap.svg",     label: "TOTAL TXS",  value: analysis.totalTxs.toLocaleString(), color: "#4da6ff" },
+              { icon: "/calendar.svg", label: "WALLET AGE", value: analysis.walletAgeDays + "d",        color: "#c084fc" },
+              { icon: "/deploy.svg",   label: "CONTRACTS",  value: analysis.uniqueContracts,            color: "#00e676" },
+              { icon: "/warning.svg",  label: "FAILED TXS", value: analysis.failedCount,                color: "#ff6b6b" },
             ].map(({ icon, label, value, color }) => (
               <div key={label} style={{ ...gBase, padding: m ? "13px 10px" : "16px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: m ? 4 : 6 }}>
                 <Icon src={icon} size={m ? 18 : 22} style={{ opacity: 0.8 }} />
                 <div className="dh" style={{ color, fontWeight: 900, fontSize: m ? "17px" : "20px", lineHeight: 1 }}>{value}</div>
-                <div style={{ color: "#4a5568", fontSize: m ? "9px" : "10px", fontWeight: 700, letterSpacing: "0.07em" }}>{label.toUpperCase()}</div>
+                <div style={{ color: "#4a5568", fontSize: m ? "9px" : "10px", fontWeight: 700, letterSpacing: "0.07em" }}>{label}</div>
               </div>
             ))}
           </div>
@@ -173,30 +178,28 @@ export default function WalletAnalyzer({ wallet }) {
               <Icon src="/milestone.svg" size={m ? 16 : 18} style={{ opacity: 0.85 }} />
               <div className="dh" style={{ color: "white", fontSize: m ? "13px" : "15px", fontWeight: 800 }}>Transaction Milestones</div>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-              {TX_ROWS.map(({ key, icon, label, valueColor }, idx) => {
-                const tx = analysis[key];
-                const isLast = idx === TX_ROWS.length - 1;
-                return (
-                  <div key={key} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: isLast ? 0 : 12, marginBottom: isLast ? 0 : 12, borderBottom: isLast ? "none" : "1px solid rgba(255,255,255,0.05)" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 9, minWidth: 0 }}>
-                      <Icon src={icon} size={m ? 16 : 18} style={{ opacity: 0.75, flexShrink: 0 }} />
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{ color: "#8892a4", fontSize: m ? "10px" : "11px", fontWeight: 600, marginBottom: 2 }}>{label}</div>
-                        <div className="dh" style={{ color: "white", fontSize: m ? "12px" : "13px", fontWeight: 700 }}>{tx?.date || "—"}</div>
-                        <a href={`https://basescan.org/tx/${tx?.hash}`} target="_blank" rel="noreferrer"
-                          style={{ color: "#4da6ff", fontSize: "11px", textDecoration: "none" }}>
-                          {shortHash(tx?.hash)}
-                        </a>
-                      </div>
-                    </div>
-                    <div className="dh" style={{ color: valueColor, fontSize: m ? "13px" : "14px", fontWeight: 800, flexShrink: 0, marginLeft: 8 }}>
-                      {tx?.valueEth} ETH
+            {TX_ROWS.map(({ key, icon, label, valueColor }, idx) => {
+              const tx     = analysis[key];
+              const isLast = idx === TX_ROWS.length - 1;
+              return (
+                <div key={key} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: isLast ? 0 : 12, marginBottom: isLast ? 0 : 12, borderBottom: isLast ? "none" : "1px solid rgba(255,255,255,0.05)" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 9, minWidth: 0 }}>
+                    <Icon src={icon} size={m ? 15 : 17} style={{ opacity: 0.75, flexShrink: 0 }} />
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ color: "#8892a4", fontSize: m ? "10px" : "11px", fontWeight: 600, marginBottom: 2 }}>{label}</div>
+                      <div className="dh" style={{ color: "white", fontSize: m ? "12px" : "13px", fontWeight: 700 }}>{tx?.date || "—"}</div>
+                      <a href={`https://basescan.org/tx/${tx?.hash}`} target="_blank" rel="noreferrer"
+                        style={{ color: "#4da6ff", fontSize: "11px", textDecoration: "none" }}>
+                        {shortHash(tx?.hash)}
+                      </a>
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                  <div className="dh" style={{ color: valueColor, fontSize: m ? "13px" : "14px", fontWeight: 800, flexShrink: 0, marginLeft: 8 }}>
+                    {tx?.valueEth} ETH
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           {/* Activity Heatmap */}
